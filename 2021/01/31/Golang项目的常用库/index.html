@@ -22,29 +22,34 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="MoonlitAlley">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="[TOC] 类型转化spf13&#x2F;cast 官方说明 Easy and safe casting from one type to another in Go  Cast is a library to convert between different go types in a consistent and easy way.   使用示例Example ‘ToString’: 12345678">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang项目的常用库">
+<meta property="og:url" content="http://example.com/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/index.html">
 <meta property="og:site_name" content="MoonlitAlley">
+<meta property="og:description" content="[TOC] 类型转化spf13&#x2F;cast 官方说明 Easy and safe casting from one type to another in Go  Cast is a library to convert between different go types in a consistent and easy way.   使用示例Example ‘ToString’: 12345678">
 <meta property="og:locale">
+<meta property="article:published_time" content="2021-01-31T08:53:27.000Z">
+<meta property="article:modified_time" content="2021-01-31T09:30:07.168Z">
 <meta property="article:author" content="ss Song">
+<meta property="article:tag" content="Gloang">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-Hans'
   };
 </script>
 
-  <title>MoonlitAlley</title>
+  <title>Golang项目的常用库 | MoonlitAlley</title>
   
 
 
@@ -198,7 +203,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -210,6 +215,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">类型转化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E8%AF%B4%E6%98%8E"><span class="nav-number">1.0.1.</span> <span class="nav-text">官方说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.0.2.</span> <span class="nav-text">使用示例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#json%E5%A4%84%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">json处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E8%AF%B4%E6%98%8E-1"><span class="nav-number">2.0.1.</span> <span class="nav-text">官方说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B-1"><span class="nav-number">2.0.2.</span> <span class="nav-text">使用示例</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#http%E8%AF%B7%E6%B1%82"><span class="nav-number"></span> <span class="nav-text">http请求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E8%AF%B4%E6%98%8E-2"><span class="nav-number">0.0.1.</span> <span class="nav-text">官方说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B-2"><span class="nav-number">0.0.2.</span> <span class="nav-text">使用示例</span></a></li></ol></li></ol></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -265,11 +271,12 @@
 </noscript>
 
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
       
 
       
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
@@ -288,10 +295,9 @@
     
     
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/" class="post-title-link" itemprop="url">Golang项目的常用库</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Golang项目的常用库
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -338,7 +344,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
+        <p>[TOC]</p>
 <h2 id="类型转化"><a href="#类型转化" class="headerlink" title="类型转化"></a>类型转化</h2><p><a target="_blank" rel="noopener" href="https://github.com/spf13/cast">spf13/cast</a></p>
 <h4 id="官方说明"><a href="#官方说明" class="headerlink" title="官方说明"></a>官方说明</h4><blockquote>
 <p>Easy and safe casting from one type to another in Go</p>
@@ -383,7 +389,6 @@
 
 <p>摘取了项目（ext-profile）中的使用示例</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">request :&#x3D; gorequest.New().Timeout(time.Duration(inter.Timeout) * time.Millisecond)</span><br><span class="line">for key, value :&#x3D; range header &#123;</span><br><span class="line">	request.Header.Set(key, value)</span><br><span class="line">&#125;</span><br><span class="line">for i :&#x3D; inter.Retries; i &gt; 0; i-- &#123;</span><br><span class="line">	resp, result, errs :&#x3D; request.Post(inter.Url).Send(body).End()</span><br><span class="line">	if err :&#x3D; resp.Body.Close(); err!&#x3D; nil &#123;</span><br><span class="line">		ilog.LogReqErr(ilog.LL_ERROR, &quot;async&quot;, feature.RequestId, &quot;resp body close err&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	if errs !&#x3D; nil &#123;</span><br><span class="line">		&#x2F;&#x2F;TODO log</span><br><span class="line">		ilog.LogReqErr(ilog.LL_ERROR, &quot;async&quot;, feature.RequestId, &quot;get third party result fail&quot;, errs)</span><br><span class="line">		continue</span><br><span class="line">	&#125;</span><br><span class="line">	return &amp;resultItem&#123;result: result, identification: inter.UrlName&#125;, nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
     </div>
 
     
@@ -391,365 +396,21 @@
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/Gloang/" rel="tag"># Gloang</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/09/%E5%85%AD%E8%89%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/09/%E5%85%AD%E8%89%BA/" class="post-title-link" itemprop="url">六艺</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-10-09 17:32:55" itemprop="dateCreated datePublished" datetime="2020-10-09T17:32:55+08:00">2020-10-09</time>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/10/09/%E5%85%AD%E8%89%BA/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/09/%E5%85%AD%E8%89%BA/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/travel/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/15/travel/" class="post-title-link" itemprop="url">travel</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2020-09-15 23:08:14 / Modified: 23:55:31" itemprop="dateCreated datePublished" datetime="2020-09-15T23:08:14+08:00">2020-09-15</time>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/09/15/travel/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/travel/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="/2020/09/15/travel/082.jpeg"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">travel</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-09-15 23:08:14" itemprop="dateCreated datePublished" datetime="2020-09-15T23:08:14+08:00">2020-09-15</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-09-16 23:05:05" itemprop="dateModified" datetime="2020-09-16T23:05:05+08:00">2020-09-16</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">搭建</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>基础搭建</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;cbf8ba8af532</span><br></pre></td></tr></table></figure>
-<p>官方手册</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;theme-next.iissnan.com&#x2F;getting-started.html</span><br></pre></td></tr></table></figure>
-
-<p>阅读全文</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- more --&gt;</span><br></pre></td></tr></table></figure>
-
-<p>添加搜索</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;112f3eae2098</span><br></pre></td></tr></table></figure>
-
-<p>添加评论功能</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;83cf3e358c8e</span><br><span class="line"></span><br><span class="line">https:&#x2F;&#x2F;blog.csdn.net&#x2F;jiunian_2761&#x2F;article&#x2F;details&#x2F;97388997</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/comments.png"></p>
-<p>1.新建一个页面，命名为categories:</p>
-<p>hexo new page categories</p>
-<p>之所以命名为categories的原因是在next主题的配置文件中，categories是关键词。</p>
-<p>2.编辑新建界面，将页面类型设置为categories，主题将会在这个页面上显示所有的分类：</p>
-<hr>
-<p>title: categories<br>date: 2018-03-02 12:33:16<br>type: “categories”</p>
-<hr>
-<p>这个步骤很有意思，编辑新建界面是什么？当然hexo熟悉一些自然会知道，但是小萌新还是比较懵逼的。实际上调用hexo new page xxx后，会在/source/categories/目录下生成一个index.md文档，在此文档头部加上上面这段即可。实际上，index.md里只需要有这个声明即可，其他内容并不会显示出来，写了也没用。</p>
-<p>PS. 无论是page，还是post的文章，都是以.md格式结尾，在hexo g的过程中会产生对应的.html文档，然后hexo d到Github上的也只是html文档，不是.md格式的文档。</p>
-<p>另外就是，需要注意一点：如果有启用多说 或者 Disqus 评论，默认页面也会带有评论。需要关闭的话，请添加字段 comments 并将值设置为 false，如：</p>
-<hr>
-<p>title: categories<br>date: 2018-03-02 12:33:16<br>type: “categories”<br>comments: false</p>
-<hr>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/15/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-09-15 22:41:31" itemprop="dateCreated datePublished" datetime="2020-09-15T22:41:31+08:00">2020-09-15</time>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/09/15/hello-world/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/hello-world/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/09/15/hello-world/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/10/09/%E5%85%AD%E8%89%BA/" rel="prev" title="六艺">
+                  <i class="fa fa-chevron-left"></i> 六艺
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
     </footer>
   </article>
   
@@ -757,11 +418,9 @@
   
 
 
-  
-
-
 
       
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -851,7 +510,7 @@ NexT.utils.loadComments('#valine-comments', () => {
   NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({
       el  : '#valine-comments',
-      path: "/",
+      path: "/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/",
     }, {"enable":true,"appId":"2hxowQ6pisGlXmzRuUTfpTil-gzGzoHsz","appKey":"ToGMLCAskP6uM4bS5pRgJII9","placeholder":"Just go go","avatar":"monsterid","meta":["nick","mail","link"],"pageSize":10,"lang":null,"visitor":false,"comment_count":true,"recordIP":false,"serverURLs":null,"enableQQ":false,"requiredFields":[]}
     ));
   }, window.Valine);
