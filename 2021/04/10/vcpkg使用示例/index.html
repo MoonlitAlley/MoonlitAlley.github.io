@@ -22,29 +22,36 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="MoonlitAlley">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="尝试一次之后： 泪流满面， 后悔自己昨天还在熬夜编译一个第三方库文件 官方文档 Microsoft vcpkg：适用于C++ 的包管理器 github microsoft&#x2F;vcpkg vcpkg&#x2F;README_zh_CN.md vcpkg&#x2F;docs&#x2F;examples&#x2F;installing-and-using-packages  使用示例示例项目中依赖nlohmann_json、 gflags两个第">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vcpkg使用示例">
+<meta property="og:url" content="http://example.com/2021/04/10/vcpkg%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/index.html">
 <meta property="og:site_name" content="MoonlitAlley">
+<meta property="og:description" content="尝试一次之后： 泪流满面， 后悔自己昨天还在熬夜编译一个第三方库文件 官方文档 Microsoft vcpkg：适用于C++ 的包管理器 github microsoft&#x2F;vcpkg vcpkg&#x2F;README_zh_CN.md vcpkg&#x2F;docs&#x2F;examples&#x2F;installing-and-using-packages  使用示例示例项目中依赖nlohmann_json、 gflags两个第">
 <meta property="og:locale">
+<meta property="og:image" content="http://example.com/2021/04/10/vcpkg%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/vc_test_build.png">
+<meta property="article:published_time" content="2021-04-10T11:19:39.000Z">
+<meta property="article:modified_time" content="2021-04-10T12:26:14.253Z">
 <meta property="article:author" content="ss Song">
+<meta property="article:tag" content="c++、包管理">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/04/10/vcpkg%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/vc_test_build.png">
 
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2021/04/10/vcpkg%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-Hans'
   };
 </script>
 
-  <title>MoonlitAlley</title>
+  <title>vcpkg使用示例 | MoonlitAlley</title>
   
 
 
@@ -198,7 +205,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -210,6 +217,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="nav-number">1.</span> <span class="nav-text">官方文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">使用示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99CMakeLists-txt"><span class="nav-number">2.2.</span> <span class="nav-text">如何编写CMakeLists.txt</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E5%8F%8A%E8%BE%93%E5%87%BA%E7%BB%93%E6%9E%9C"><span class="nav-number">2.3.</span> <span class="nav-text">执行及输出结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vcpkg%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.</span> <span class="nav-text">vcpkg介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8-macOS-%E4%B8%8A%E5%A4%8D%E5%88%B6%E5%92%8C%E8%AE%BE%E7%BD%AE-vcpkg"><span class="nav-number">3.1.</span> <span class="nav-text">在 macOS 上复制和设置 vcpkg</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CLion-%E4%B8%AD%E4%BD%BF%E7%94%A8-vcpkg"><span class="nav-number">3.2.</span> <span class="nav-text">CLion 中使用 vcpkg</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%86-vcpkg-%E4%BD%9C%E4%B8%BA%E4%B8%80%E4%B8%AA%E5%AD%90%E6%A8%A1%E5%9D%97"><span class="nav-number">3.3.</span> <span class="nav-text">将 vcpkg 作为一个子模块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93"><span class="nav-number">3.4.</span> <span class="nav-text">安装第三方库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84-1"><span class="nav-number">3.5.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">3.6.</span> <span class="nav-text">常用命令</span></a></li></ol></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -265,103 +273,12 @@
 </noscript>
 
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
       
 
       
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
 
     
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">read-committed下GAP锁问题</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-04-16 11:57:13 / Modified: 12:02:16" itemprop="dateCreated datePublished" datetime="2021-04-16T11:57:13+08:00">2021-04-16</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>建表语句</p>
-<p>同类问题及相关文档</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhjh256/p/6051839.html">mysql 5.6 read-committed隔离级别下并发插入唯一索引导致死锁一例（GAP锁的问题）</a></li>
-<li><a target="_blank" rel="noopener" href="http://www.kokojia.com/article/42839.html">数据库：MySQL 普通索引和唯一索引的区别</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
@@ -380,10 +297,9 @@
     
     
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/10/vcpkg%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/" class="post-title-link" itemprop="url">vcpkg使用示例</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          vcpkg使用示例
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -430,7 +346,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>尝试一次之后： 泪流满面， 后悔自己昨天还在熬夜编译一个第三方库文件</p>
+        <p>尝试一次之后： 泪流满面， 后悔自己昨天还在熬夜编译一个第三方库文件</p>
 <h3 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h3><ul>
 <li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/cpp/build/vcpkg?view=msvc-160">Microsoft vcpkg：适用于C++ 的包管理器</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/Microsoft/vcpkg">github microsoft/vcpkg</a></li>
@@ -481,7 +397,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">vcpkg(master) » .&#x2F;vcpkg search json</span><br><span class="line">arrow[json]                           JSON file support</span><br><span class="line">bitserializer        0.10             Core part of C++ 17 library for serialization to JSON, XML, YAML</span><br><span class="line">bitserializer[cpprestjson-archive]    Module for support JSON (implementation based on the CppRestSDK library)</span><br><span class="line">bitserializer[pugixml-archive]        Module for support XML (implementation based on the PugiXml library)</span><br><span class="line">bitserializer[rapidjson-archive]      Module for support JSON (implementation based on the RapidJson library)</span><br><span class="line">bitserializer[rapidyaml-archive]      Module for support YAML (implementation based on the RapidYaml library)</span><br><span class="line">bitserializer-cpp... alias            Deprecated alias for bitserializer-cpprestjson</span><br><span class="line">bitserializer-rap... alias            Deprecated alias for bitserializer-rapidjson</span><br><span class="line">boost-json           1.75.0           Boost json module</span><br><span class="line">cereal               1.3.0            a header-only C++11 serialization library (built in support for binary, XML an...</span><br><span class="line">cjson                2019-11-30-1     Ultralightweight JSON parser in ANSI C</span><br><span class="line">cjson[utils]                          Enable building the cJSON_Utils library</span><br><span class="line">cpprestsdk           2.10.17          C++11 JSON, REST, and OAuth library</span><br><span class="line">cpprestsdk[brotli]                    Brotli compression support</span><br><span class="line">cpprestsdk[compression]               HTTP Compression support</span><br><span class="line">cpprestsdk[default-features]          Features installed by default</span><br><span class="line">cpprestsdk[websockets]                Websockets support</span><br><span class="line">jansson              2.13.1           Jansson is a C library for encoding, decoding and manipulating JSON data</span><br><span class="line">jsmn                 2019-04-27       A minimalistic JSON parser in C.</span><br><span class="line">json-c               2019-09-10#1     A JSON implementation in C</span><br><span class="line">json-dto             0.2.11           A small header-only library for converting data between json representation an...</span><br><span class="line">json-schema-valid... 2.1.0            This is a C++ library for validating JSON documents based on a JSON Schema. Th...</span><br><span class="line">json-spirit          4.1.0-1          json parser using boost library</span><br><span class="line">json11               2017-06-20-2     json11 is a tiny JSON library for C++11, providing JSON parsing and serializat...</span><br><span class="line">json5-parser         1.0.0#2          An enhancement of the JSON Spirit C++ library to understand json5.</span><br><span class="line">jsoncons             0.159.0          A C++, header-only library for constructing JSON and JSON-like text and binary...</span><br><span class="line">jsoncpp              1.9.4            jsoncpp is an implementation of a JSON reader and writer in C++. JSON (JavaScr...</span><br><span class="line">jsonnet              0.16.0#1         Jsonnet - The data templating language</span><br><span class="line">jwt-cpp              0.4.0            A header only library for creating and validating json web tokens in c++</span><br><span class="line">minitrace            2019.02.06       Simple C&#x2F;C++ library for producing JSON traces suitable for Chrome&#39;s built-in ...</span><br><span class="line">msgpack              3.3.0            MessagePack is an efficient binary serialization format, which lets you exchan...</span><br><span class="line">msgpack11            0.0.10-1         msgpack11 is a tiny MsgPack library for C++11, providing MsgPack parsing and s...</span><br><span class="line">nlohmann-json        3.9.1            JSON for Modern C++</span><br><span class="line">parson               2020-09-14       a lighweight json library written in C</span><br><span class="line">picojson             1.3.0-1          A header-file-only, JSON parser serializer in C++.</span><br><span class="line">rapidjson            2020-09-14       A fast JSON parser&#x2F;generator for C++ with both SAX&#x2F;DOM style API &lt;http:&#x2F;&#x2F;rapid...</span><br><span class="line">sajson               2018-09-21       Lightweight, extremely high-performance JSON parser for C++11</span><br><span class="line">simdjson             0.7.1            A extremely fast JSON library that can parse gigabytes of JSON per second</span><br><span class="line">sqlcipher[json1]                      enable JSON functionality for sqlite3</span><br><span class="line">sqlite3[json1]                        enable JSON functionality for sqlite3</span><br><span class="line">taocpp-json          2020-09-14       C++ header-only JSON library</span><br><span class="line">valijson             2018-11-17-1     Header-only C++ library for JSON Schema validation</span><br><span class="line">yajl                 2.1.0-1          Yet Another JSON Library</span><br><span class="line"></span><br><span class="line">If your library is not listed, please open an issue at and&#x2F;or consider making a pull request:</span><br><span class="line">    https:&#x2F;&#x2F;github.com&#x2F;Microsoft&#x2F;vcpkg&#x2F;issues</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>已安装</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vcpkg(master) » .&#x2F;vcpkg list</span><br><span class="line">sqlite3:x86-windows         3.32.1           SQLite is a software library that implements a se...</span><br></pre></td></tr></table></figure>
-      
     </div>
 
     
@@ -489,589 +404,24 @@
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/c-%E3%80%81%E5%8C%85%E7%AE%A1%E7%90%86/" rel="tag"># c++、包管理</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/" class="post-title-link" itemprop="url">偏安一隅</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-01-31 18:05:41" itemprop="dateCreated datePublished" datetime="2021-01-31T18:05:41+08:00">2021-01-31</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-04-10 20:16:03" itemprop="dateModified" datetime="2021-04-10T20:16:03+08:00">2021-04-10</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%89%AA%E5%BD%B1/" itemprop="url" rel="index"><span itemprop="name">剪影</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>出发：朝阳区来广营去往箭扣长城路上<br>mey be 范崎路<br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-3.jpg"></p>
-<p>反正从我来到这个城市以后，没有再现过“苍穹之下”的天气了<br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-0.jpg"><br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-1.jpg"><br>写满了安静</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/" class="post-title-link" itemprop="url">Golang项目的常用库</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-01-31 16:53:27 / Modified: 17:45:47" itemprop="dateCreated datePublished" datetime="2021-01-31T16:53:27+08:00">2021-01-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Golang-module-%E6%94%B6%E9%9B%86/" itemprop="url" rel="index"><span itemprop="name">Golang module 收集</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h2 id="类型转化"><a href="#类型转化" class="headerlink" title="类型转化"></a>类型转化</h2><p><a target="_blank" rel="noopener" href="https://github.com/spf13/cast">spf13/cast</a></p>
-<h4 id="官方说明"><a href="#官方说明" class="headerlink" title="官方说明"></a>官方说明</h4><blockquote>
-<p>Easy and safe casting from one type to another in Go</p>
-<blockquote>
-<p>Cast is a library to convert between different go types in a consistent and easy way.</p>
-</blockquote>
-</blockquote>
-<h4 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h4><p>Example ‘ToString’:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cast.ToString(&quot;mayonegg&quot;)         &#x2F;&#x2F; &quot;mayonegg&quot;</span><br><span class="line">cast.ToString(8)                  &#x2F;&#x2F; &quot;8&quot;</span><br><span class="line">cast.ToString(8.31)               &#x2F;&#x2F; &quot;8.31&quot;</span><br><span class="line">cast.ToString([]byte(&quot;one time&quot;)) &#x2F;&#x2F; &quot;one time&quot;</span><br><span class="line">cast.ToString(nil)                &#x2F;&#x2F; &quot;&quot;</span><br><span class="line"></span><br><span class="line">var foo interface&#123;&#125; &#x3D; &quot;one more time&quot;</span><br><span class="line">cast.ToString(foo)                &#x2F;&#x2F; &quot;one more time&quot;</span><br></pre></td></tr></table></figure>
-<p>当我们在项目（be-derive）中需要根据配置来决定返回值类型时，可以使用cast在最后阶段完成一个“统一的操作”</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">func (this *Derive) formatCalcResult(val interface&#123;&#125;, typeName string) interface&#123;&#125; &#123;</span><br><span class="line">	switch typeName &#123;</span><br><span class="line">	case &quot;float&quot;:</span><br><span class="line">		fallthrough</span><br><span class="line">	case &quot;double&quot;:</span><br><span class="line">		return math.Trunc(cast.ToFloat64(val)*1e2+0.5) * 1e-2</span><br><span class="line">	case &quot;int&quot;:</span><br><span class="line">		return math.Trunc(cast.ToFloat64(val))</span><br><span class="line">	default:</span><br><span class="line">		return val</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="json处理"><a href="#json处理" class="headerlink" title="json处理"></a>json处理</h2><p><a target="_blank" rel="noopener" href="https://github.com/tidwall/gjson">tidwall/gjson</a><br><a target="_blank" rel="noopener" href="https://github.com/tidwall/sjson">tidwall/sjon</a></p>
-<h4 id="官方说明-1"><a href="#官方说明-1" class="headerlink" title="官方说明"></a>官方说明</h4><blockquote>
-<p> GJSON is a Go package that provides a fast and simple way to get values from a json document. It has features such as one line retrieval, dot notation paths, iteration, and parsing json lines.</p>
-</blockquote>
-<blockquote>
-<p> SJSON is a Go package that provides a very fast and simple way to set a value in a json document. The purpose for this library is to provide efficient json updating for the SummitDB project. For quickly retrieving json values check out GJSON.</p>
-</blockquote>
-<h4 id="使用示例-1"><a href="#使用示例-1" class="headerlink" title="使用示例"></a>使用示例</h4><p>To unmarshal to a map[string]interface{}:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">m, ok :&#x3D; gjson.Parse(json).Value().(map[string]interface&#123;&#125;)</span><br><span class="line">if !ok &#123;</span><br><span class="line">	&#x2F;&#x2F; not a map</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Get a json value</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if !gjson.Valid(json) &#123;</span><br><span class="line">	return errors.New(&quot;invalid json&quot;)</span><br><span class="line">&#125;</span><br><span class="line">value :&#x3D; gjson.Get(json, &quot;name.last&quot;)</span><br></pre></td></tr></table></figure>
-<p>Set vlaue to a empty string or json string</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">value, _ :&#x3D; sjson.Set(&quot;&quot;, &quot;name.last&quot;, &quot;Anderson&quot;)</span><br><span class="line">println(value)</span><br><span class="line">&#x2F;&#x2F; Output:</span><br><span class="line">&#x2F;&#x2F; &#123;&quot;name&quot;:&#123;&quot;last&quot;:&quot;Anderson&quot;&#125;&#125;</span><br><span class="line"></span><br><span class="line">value, _ :&#x3D; sjson.Set(&#96;&#123;&quot;name&quot;:&#123;&quot;last&quot;:&quot;Anderson&quot;&#125;&#125;&#96;, &quot;name.first&quot;, &quot;Sara&quot;)</span><br><span class="line">println(value)</span><br><span class="line">&#x2F;&#x2F; Output:</span><br><span class="line">&#x2F;&#x2F; &#123;&quot;name&quot;:&#123;&quot;first&quot;:&quot;Sara&quot;,&quot;last&quot;:&quot;Anderson&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>以下代码（arch-tool）的功能为：将kv为jsonpath类型的字符串，转化为标准的json格式<br>from <code>&#123;&quot;a.b.c&quot;:1, &quot;a.d&quot;:true&#125;</code> to <code>&#123;&quot;a&quot;:&#123;&quot;b&quot;:&#123;&quot;c&quot;:1&#125;, &quot;d&quot;:true&#125;&#125;</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">aeFeatures :&#x3D; make(map[string]interface&#123;&#125;)</span><br><span class="line">err :&#x3D; json.Unmarshal([]byte(gjson.Get(aeItemStr, &quot;features&quot;).Raw), &amp;aeFeatures)</span><br><span class="line">if err !&#x3D; nil &#123;</span><br><span class="line">	log.Println(fmt.Sprintf(&quot;json.Unmarshal aeItemStr features err&#x3D;%v&quot;, err))</span><br><span class="line">	continue</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">profileFeaturesStr :&#x3D; &#96;&#123; &#125;&#96;</span><br><span class="line">for featuresKey, featuresValue :&#x3D; range aeFeatures &#123;</span><br><span class="line">	profileFeaturesStr, _ &#x3D; sjson.Set(profileFeaturesStr, featuresKey, featuresValue)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="http请求"><a href="#http请求" class="headerlink" title="http请求"></a>http请求</h1><p><a target="_blank" rel="noopener" href="https://github.com/parnurzeal/gorequest">parnurzeal/gorequest</a></p>
-<h4 id="官方说明-2"><a href="#官方说明-2" class="headerlink" title="官方说明"></a>官方说明</h4><blockquote>
-<p>GoRequest – Simplified HTTP client ( inspired by famous SuperAgent lib in Node.js )</p>
-<blockquote>
-<p>GoRequest makes thing much more simple for you, making http client more awesome and fun like SuperAgent + golang style usage.</p>
-</blockquote>
-</blockquote>
-<h4 id="使用示例-2"><a href="#使用示例-2" class="headerlink" title="使用示例"></a>使用示例</h4><p>Sth in oneline<br><code>resp, body, errs = gorequest.New().Timeout(time.Duration(inter.Timeout) * time.Millisecond).Proxy(&quot;http://proxy:999&quot;).Get(&quot;http://example-no-proxy.com&quot;).End()</code><br>Call Back:<br>Moreover, GoRequest also supports callback function. This gives you much more flexibility on using it. You can use it any way to match your own style! Let’s see a bit of callback example:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func printStatus(resp gorequest.Response, body string, errs []error)&#123;</span><br><span class="line">  fmt.Println(resp.Status)</span><br><span class="line">&#125;</span><br><span class="line">gorequest.New().Get(&quot;http:&#x2F;&#x2F;example.com&quot;).End(printStatus)</span><br></pre></td></tr></table></figure>
-
-<p>For a JSON POST with standard libraries, you might need to marshal map data structure to json format, set headers to ‘application/json’ (and other headers if you need to) and declare http.Client. So, your code becomes longer and harder to maintain:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">m :&#x3D; map[string]interface&#123;&#125;&#123;</span><br><span class="line">  &quot;name&quot;: &quot;backy&quot;,</span><br><span class="line">  &quot;species&quot;: &quot;dog&quot;,</span><br><span class="line">&#125;</span><br><span class="line">mJson, _ :&#x3D; json.Marshal(m)</span><br><span class="line">contentReader :&#x3D; bytes.NewReader(mJson)</span><br><span class="line">req, _ :&#x3D; http.NewRequest(&quot;POST&quot;, &quot;http:&#x2F;&#x2F;example.com&quot;, contentReader)</span><br><span class="line">req.Header.Set(&quot;Content-Type&quot;, &quot;application&#x2F;json&quot;)</span><br><span class="line">req.Header.Set(&quot;Notes&quot;,&quot;GoRequest is coming!&quot;)</span><br><span class="line">client :&#x3D; &amp;http.Client&#123;&#125;</span><br><span class="line">resp, _ :&#x3D; client.Do(req)</span><br></pre></td></tr></table></figure>
-
-<p>摘取了项目（ext-profile）中的使用示例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">request :&#x3D; gorequest.New().Timeout(time.Duration(inter.Timeout) * time.Millisecond)</span><br><span class="line">for key, value :&#x3D; range header &#123;</span><br><span class="line">	request.Header.Set(key, value)</span><br><span class="line">&#125;</span><br><span class="line">for i :&#x3D; inter.Retries; i &gt; 0; i-- &#123;</span><br><span class="line">	resp, result, errs :&#x3D; request.Post(inter.Url).Send(body).End()</span><br><span class="line">	if err :&#x3D; resp.Body.Close(); err!&#x3D; nil &#123;</span><br><span class="line">		ilog.LogReqErr(ilog.LL_ERROR, &quot;async&quot;, feature.RequestId, &quot;resp body close err&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	if errs !&#x3D; nil &#123;</span><br><span class="line">		&#x2F;&#x2F;TODO log</span><br><span class="line">		ilog.LogReqErr(ilog.LL_ERROR, &quot;async&quot;, feature.RequestId, &quot;get third party result fail&quot;, errs)</span><br><span class="line">		continue</span><br><span class="line">	&#125;</span><br><span class="line">	return &amp;resultItem&#123;result: result, identification: inter.UrlName&#125;, nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/09/%E5%85%AD%E8%89%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/09/%E5%85%AD%E8%89%BA/" class="post-title-link" itemprop="url">六艺</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-10-09 17:32:55" itemprop="dateCreated datePublished" datetime="2020-10-09T17:32:55+08:00">2020-10-09</time>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/10/09/%E5%85%AD%E8%89%BA/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/09/%E5%85%AD%E8%89%BA/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/travel/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/15/travel/" class="post-title-link" itemprop="url">travel</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2020-09-15 23:08:14 / Modified: 23:55:31" itemprop="dateCreated datePublished" datetime="2020-09-15T23:08:14+08:00">2020-09-15</time>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/09/15/travel/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/travel/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="/2020/09/15/travel/082.jpeg"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">travel</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-09-15 23:08:14" itemprop="dateCreated datePublished" datetime="2020-09-15T23:08:14+08:00">2020-09-15</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-09-16 23:05:05" itemprop="dateModified" datetime="2020-09-16T23:05:05+08:00">2020-09-16</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">搭建</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>基础搭建</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;cbf8ba8af532</span><br></pre></td></tr></table></figure>
-<p>官方手册</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;theme-next.iissnan.com&#x2F;getting-started.html</span><br></pre></td></tr></table></figure>
-
-<p>阅读全文</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- more --&gt;</span><br></pre></td></tr></table></figure>
-
-<p>添加搜索</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;112f3eae2098</span><br></pre></td></tr></table></figure>
-
-<p>添加评论功能</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;83cf3e358c8e</span><br><span class="line"></span><br><span class="line">https:&#x2F;&#x2F;blog.csdn.net&#x2F;jiunian_2761&#x2F;article&#x2F;details&#x2F;97388997</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/comments.png"></p>
-<p>1.新建一个页面，命名为categories:</p>
-<p>hexo new page categories</p>
-<p>之所以命名为categories的原因是在next主题的配置文件中，categories是关键词。</p>
-<p>2.编辑新建界面，将页面类型设置为categories，主题将会在这个页面上显示所有的分类：</p>
-<hr>
-<p>title: categories<br>date: 2018-03-02 12:33:16<br>type: “categories”</p>
-<hr>
-<p>这个步骤很有意思，编辑新建界面是什么？当然hexo熟悉一些自然会知道，但是小萌新还是比较懵逼的。实际上调用hexo new page xxx后，会在/source/categories/目录下生成一个index.md文档，在此文档头部加上上面这段即可。实际上，index.md里只需要有这个声明即可，其他内容并不会显示出来，写了也没用。</p>
-<p>PS. 无论是page，还是post的文章，都是以.md格式结尾，在hexo g的过程中会产生对应的.html文档，然后hexo d到Github上的也只是html文档，不是.md格式的文档。</p>
-<p>另外就是，需要注意一点：如果有启用多说 或者 Disqus 评论，默认页面也会带有评论。需要关闭的话，请添加字段 comments 并将值设置为 false，如：</p>
-<hr>
-<p>title: categories<br>date: 2018-03-02 12:33:16<br>type: “categories”<br>comments: false</p>
-<hr>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/15/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-09-15 22:41:31" itemprop="dateCreated datePublished" datetime="2020-09-15T22:41:31+08:00">2020-09-15</time>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/09/15/hello-world/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/hello-world/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/09/15/hello-world/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/" rel="prev" title="偏安一隅">
+                  <i class="fa fa-chevron-left"></i> 偏安一隅
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/" rel="next" title="read-committed下GAP锁问题">
+                  read-committed下GAP锁问题 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
     </footer>
   </article>
   
@@ -1079,11 +429,9 @@
   
 
 
-  
-
-
 
       
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -1173,7 +521,7 @@ NexT.utils.loadComments('#valine-comments', () => {
   NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({
       el  : '#valine-comments',
-      path: "/",
+      path: "/2021/04/10/vcpkg%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/",
     }, {"enable":true,"appId":"2hxowQ6pisGlXmzRuUTfpTil-gzGzoHsz","appKey":"ToGMLCAskP6uM4bS5pRgJII9","placeholder":"Just go go","avatar":"monsterid","meta":["nick","mail","link"],"pageSize":10,"lang":null,"visitor":false,"comment_count":true,"recordIP":false,"serverURLs":null,"enableQQ":false,"requiredFields":[]}
     ));
   }, window.Valine);

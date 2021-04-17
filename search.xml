@@ -129,13 +129,91 @@
     <title>偏安一隅</title>
     <url>/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/</url>
     <content><![CDATA[<p>出发：朝阳区来广营去往箭扣长城路上<br>mey be 范崎路<br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-3.jpg"></p>
-<p>反正从我来到这个城市以后，没有再现过“苍穹之下”的天气了<br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-0.jpg"><br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-1.jpg"><br>写满了安静<br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-2.jpg"></p>
+<p>反正从我来到这个城市以后，没有再现过“苍穹之下”的天气了<br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-0.jpg"><br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-1.jpg"><br>写满了安静</p>
 ]]></content>
       <categories>
         <category>剪影</category>
       </categories>
       <tags>
         <tag>北京</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vcpkg使用示例</title>
+    <url>/2021/04/10/vcpkg%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/</url>
+    <content><![CDATA[<p>尝试一次之后： 泪流满面， 后悔自己昨天还在熬夜编译一个第三方库文件</p>
+<h3 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h3><ul>
+<li><a href="https://docs.microsoft.com/zh-cn/cpp/build/vcpkg?view=msvc-160">Microsoft vcpkg：适用于C++ 的包管理器</a></li>
+<li><a href="https://github.com/Microsoft/vcpkg">github microsoft/vcpkg</a></li>
+<li><a href="https://github.com/microsoft/vcpkg/blob/master/README_zh_CN.md">vcpkg/README_zh_CN.md</a></li>
+<li><a href="https://github.com/microsoft/vcpkg/blob/master/docs/examples/installing-and-using-packages.md">vcpkg/docs/examples/installing-and-using-packages</a></li>
+</ul>
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>示例项目中依赖nlohmann_json、 gflags两个第三方库文件，其中</p>
+<ul>
+<li>nlohmann_json 仅需要导入头文件</li>
+<li>gflags 需要引入头文件，同时链接动态库文件<br>该项目主要功能为通过gflags功能读取配置文件中的参数，将参数值放入json对象中，并打印到屏幕<br><a href="https://github.com/MoonlitAlley/vc_test">项目链接</a></li>
+</ul>
+<h4 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">» tree -L 1</span><br><span class="line">.</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── flags.conf</span><br><span class="line">├── main.cpp</span><br><span class="line">└── vcpkg</span><br><span class="line"></span><br><span class="line">2 directories, 3 files</span><br></pre></td></tr></table></figure>
+
+<p>cat flags.conf</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--storage_config&#x3D;test_storage</span><br></pre></td></tr></table></figure>
+<h4 id="如何编写CMakeLists-txt"><a href="#如何编写CMakeLists-txt" class="headerlink" title="如何编写CMakeLists.txt"></a>如何编写CMakeLists.txt</h4><blockquote>
+<p>在CMakeLists.txt中直接设置CMAKE_TOOLCHAIN_FILE，此种方式可无需设置 CMAKE_TOOLCHAIN_FILE 即可使用vcpkg，且更容易完成配置工作。<br>文件中的find_package与target_link_libraries均有vcpkg直接提供，用户只需要复制到自己的CMakeLists.txt文件中即可使用</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt; cat CMakeLists.txt</span><br><span class="line">cmake_minimum_required(VERSION 3.17)</span><br><span class="line">set(CMAKE_TOOLCHAIN_FILE $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;&#x2F;vcpkg&#x2F;scripts&#x2F;buildsystems&#x2F;vcpkg.cmake</span><br><span class="line">        CACHE STRING &quot;Vcpkg toolchain file&quot;)</span><br><span class="line"></span><br><span class="line">project(vc_test)</span><br><span class="line">set(CMAKE_CXX_STANDARD 14)</span><br><span class="line"></span><br><span class="line">find_package(nlohmann_json CONFIG REQUIRED)</span><br><span class="line">find_package(gflags CONFIG REQUIRED)</span><br><span class="line"></span><br><span class="line">add_executable(vc_test main.cpp)</span><br><span class="line">target_link_libraries(vc_test PRIVATE nlohmann_json nlohmann_json::nlohmann_json)</span><br><span class="line">target_link_libraries(vc_test PRIVATE gflags_static)</span><br></pre></td></tr></table></figure>
+
+
+<p>源代码文件如下（gflags用法可以参考官方库文档）：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt; cat main.cpp</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &quot;nlohmann&#x2F;json.hpp&quot;</span><br><span class="line">#include &quot;gflags&#x2F;gflags.h&quot;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; DECLARE_string(storage_config);</span><br><span class="line">DEFINE_string(storage_config, &quot;test_default&quot;, &quot;storage_config&quot;);</span><br><span class="line"></span><br><span class="line">int main(int argc, char** argv) &#123;</span><br><span class="line">    nlohmann::json json_value &#x3D; nlohmann::json::object();</span><br><span class="line">    std::cout &lt;&lt; argv &lt;&lt; std::endl;</span><br><span class="line">    gflags::ParseCommandLineFlags(&amp;argc, &amp;argv, true);</span><br><span class="line"></span><br><span class="line">    json_value[FLAGS_storage_config] &#x3D; &quot;get_any_storage&quot;;</span><br><span class="line">    json_value[&quot;test_key&quot;] &#x3D; &quot;test_value&quot;;</span><br><span class="line">    std::cout &lt;&lt; json_value.dump() &lt;&lt; std::endl;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="执行及输出结果"><a href="#执行及输出结果" class="headerlink" title="执行及输出结果"></a>执行及输出结果</h4><p>项目执行需设置flags参数路径<br><img src="/2021/04/10/vcpkg%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/vc_test_build.png"><br>执行结果</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;Users&#x2F;momboguo&#x2F;Downloads&#x2F;workspace&#x2F;ishumei&#x2F;arch&#x2F;vc-test&#x2F;cmake-build-debug&#x2F;vc_test -flagfile&#x3D;..&#x2F;flags.conf</span><br><span class="line">0x7ffeebd27a48</span><br><span class="line">&#123;&quot;test_key&quot;:&quot;test_value&quot;,&quot;test_storage&quot;:&quot;get_any_storage&quot;&#125;</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="vcpkg介绍"><a href="#vcpkg介绍" class="headerlink" title="vcpkg介绍"></a>vcpkg介绍</h3><h4 id="在-macOS-上复制和设置-vcpkg"><a href="#在-macOS-上复制和设置-vcpkg" class="headerlink" title="在 macOS 上复制和设置 vcpkg"></a>在 macOS 上复制和设置 vcpkg</h4><ol>
+<li>在“终端”窗口中，为 vcpkg 的克隆实例创建目录。 如果打算为不同的生成目标安装库，最好在目录名称中包含目标。 建议使用短路径名称（不含空格）（如 ./macos 或 ./iot），否则，某些端口生成系统可能会出现路径问题 。 在“终端”窗口中，切换到刚刚创建的目录。</li>
+<li>从 GitHub 克隆 vcpkg 存储库：<a href="https://github.com/Microsoft/vcpkg%E3%80%82">https://github.com/Microsoft/vcpkg。</a><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;vcpkg</span><br></pre></td></tr></table></figure>
+ 此命令在 vcpkg 子目录中创建存储库的本地副本。 此位置是此 vcpkg 克隆的 vcpkg 根目录。</li>
+<li>接下来，切换到 vcpkg 根目录，并运行 vcpkg 引导程序命令：<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;bootstrap-vcpkg.sh</span><br></pre></td></tr></table></figure>
+ 引导程序将使用编译器、工具和标准库的位置配置 vcpkg。</li>
+</ol>
+<h4 id="CLion-中使用-vcpkg"><a href="#CLion-中使用-vcpkg" class="headerlink" title="CLion 中使用 vcpkg"></a>CLion 中使用 vcpkg</h4><p>打开 Toolchains 设置 (File &gt; Settings on Windows and Linux, CLion &gt; Preferences on macOS)， 并打开 CMake 设置 (Build, Execution, Deployment &gt; CMake)。 最后在 CMake options 中添加以下行:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-DCMAKE_TOOLCHAIN_FILE&#x3D;[vcpkg root]&#x2F;scripts&#x2F;buildsystems&#x2F;vcpkg.cmake</span><br></pre></td></tr></table></figure>
+<p>遗憾的是，您必须手动将此选项加入每个项目配置文件中。</p>
+<h4 id="将-vcpkg-作为一个子模块"><a href="#将-vcpkg-作为一个子模块" class="headerlink" title="将 vcpkg 作为一个子模块"></a>将 vcpkg 作为一个子模块</h4><p>当您希望将vcpkg作为一个子模块加入到您的工程中时， 您可以在第一个 project() 调用之前将以下内容添加到 CMakeLists.txt 中， 而无需将 CMAKE_TOOLCHAIN_FILE 传递给cmake调用。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">set(CMAKE_TOOLCHAIN_FILE $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;&#x2F;vcpkg&#x2F;scripts&#x2F;buildsystems&#x2F;vcpkg.cmake CACHE STRING &quot;Vcpkg toolchain file&quot;)</span><br></pre></td></tr></table></figure>
+<p>使用此种方式可无需设置 CMAKE_TOOLCHAIN_FILE 即可使用vcpkg，且更容易完成配置工作。</p>
+<h4 id="安装第三方库"><a href="#安装第三方库" class="headerlink" title="安装第三方库"></a>安装第三方库</h4><p>使用vcpkg安装json、gflags库（傻瓜式操作）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vcpkg(master) » .&#x2F;vcpkg install nlohmann-json</span><br><span class="line">Computing installation plan...</span><br><span class="line">The following packages are already installed:</span><br><span class="line">    nlohmann-json[core]:x64-osx -&gt; 3.9.1</span><br><span class="line">Package nlohmann-json:x64-osx is already installed</span><br><span class="line"></span><br><span class="line">Total elapsed time: 778 us</span><br><span class="line"></span><br><span class="line">The package nlohmann-json:x64-osx provides CMake targets:</span><br><span class="line"></span><br><span class="line">    find_package(nlohmann_json CONFIG REQUIRED)</span><br><span class="line">    target_link_libraries(main PRIVATE nlohmann_json nlohmann_json::nlohmann_json)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vcpkg(master) » .&#x2F;vcpkg install gflags</span><br><span class="line">Computing installation plan...</span><br><span class="line">The following packages are already installed:</span><br><span class="line">    gflags[core]:x64-osx -&gt; 2.2.2-1</span><br><span class="line">Package gflags:x64-osx is already installed</span><br><span class="line"></span><br><span class="line">Total elapsed time: 367 us</span><br><span class="line"></span><br><span class="line">The package gflags:x64-osx provides CMake targets:</span><br><span class="line"></span><br><span class="line">    find_package(gflags CONFIG REQUIRED)</span><br><span class="line">    target_link_libraries(main PRIVATE gflags_static gflags::gflags_static)</span><br></pre></td></tr></table></figure>
+
+<h4 id="目录结构-1"><a href="#目录结构-1" class="headerlink" title="目录结构"></a>目录结构</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vcpkg(master) » tree -L 1</span><br><span class="line">.</span><br><span class="line">├── CHANGELOG.md</span><br><span class="line">├── CONTRIBUTING.md</span><br><span class="line">├── LICENSE.txt</span><br><span class="line">├── NOTICE.txt</span><br><span class="line">├── README.md</span><br><span class="line">├── README_es.md</span><br><span class="line">├── README_fr.md</span><br><span class="line">├── README_ko_KR.md</span><br><span class="line">├── README_zh_CN.md</span><br><span class="line">├── bootstrap-vcpkg.bat</span><br><span class="line">├── bootstrap-vcpkg.sh</span><br><span class="line">├── buildtrees</span><br><span class="line">├── docs</span><br><span class="line">├── downloads</span><br><span class="line">├── installed</span><br><span class="line">├── packages</span><br><span class="line">├── ports</span><br><span class="line">├── scripts</span><br><span class="line">├── toolsrc</span><br><span class="line">├── triplets</span><br><span class="line">├── vcpkg</span><br><span class="line">└── versions</span><br><span class="line"></span><br><span class="line">10 directories, 12 files</span><br></pre></td></tr></table></figure>
+
+<h4 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h4><p>搜索</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vcpkg(master) » .&#x2F;vcpkg search json</span><br><span class="line">arrow[json]                           JSON file support</span><br><span class="line">bitserializer        0.10             Core part of C++ 17 library for serialization to JSON, XML, YAML</span><br><span class="line">bitserializer[cpprestjson-archive]    Module for support JSON (implementation based on the CppRestSDK library)</span><br><span class="line">bitserializer[pugixml-archive]        Module for support XML (implementation based on the PugiXml library)</span><br><span class="line">bitserializer[rapidjson-archive]      Module for support JSON (implementation based on the RapidJson library)</span><br><span class="line">bitserializer[rapidyaml-archive]      Module for support YAML (implementation based on the RapidYaml library)</span><br><span class="line">bitserializer-cpp... alias            Deprecated alias for bitserializer-cpprestjson</span><br><span class="line">bitserializer-rap... alias            Deprecated alias for bitserializer-rapidjson</span><br><span class="line">boost-json           1.75.0           Boost json module</span><br><span class="line">cereal               1.3.0            a header-only C++11 serialization library (built in support for binary, XML an...</span><br><span class="line">cjson                2019-11-30-1     Ultralightweight JSON parser in ANSI C</span><br><span class="line">cjson[utils]                          Enable building the cJSON_Utils library</span><br><span class="line">cpprestsdk           2.10.17          C++11 JSON, REST, and OAuth library</span><br><span class="line">cpprestsdk[brotli]                    Brotli compression support</span><br><span class="line">cpprestsdk[compression]               HTTP Compression support</span><br><span class="line">cpprestsdk[default-features]          Features installed by default</span><br><span class="line">cpprestsdk[websockets]                Websockets support</span><br><span class="line">jansson              2.13.1           Jansson is a C library for encoding, decoding and manipulating JSON data</span><br><span class="line">jsmn                 2019-04-27       A minimalistic JSON parser in C.</span><br><span class="line">json-c               2019-09-10#1     A JSON implementation in C</span><br><span class="line">json-dto             0.2.11           A small header-only library for converting data between json representation an...</span><br><span class="line">json-schema-valid... 2.1.0            This is a C++ library for validating JSON documents based on a JSON Schema. Th...</span><br><span class="line">json-spirit          4.1.0-1          json parser using boost library</span><br><span class="line">json11               2017-06-20-2     json11 is a tiny JSON library for C++11, providing JSON parsing and serializat...</span><br><span class="line">json5-parser         1.0.0#2          An enhancement of the JSON Spirit C++ library to understand json5.</span><br><span class="line">jsoncons             0.159.0          A C++, header-only library for constructing JSON and JSON-like text and binary...</span><br><span class="line">jsoncpp              1.9.4            jsoncpp is an implementation of a JSON reader and writer in C++. JSON (JavaScr...</span><br><span class="line">jsonnet              0.16.0#1         Jsonnet - The data templating language</span><br><span class="line">jwt-cpp              0.4.0            A header only library for creating and validating json web tokens in c++</span><br><span class="line">minitrace            2019.02.06       Simple C&#x2F;C++ library for producing JSON traces suitable for Chrome&#39;s built-in ...</span><br><span class="line">msgpack              3.3.0            MessagePack is an efficient binary serialization format, which lets you exchan...</span><br><span class="line">msgpack11            0.0.10-1         msgpack11 is a tiny MsgPack library for C++11, providing MsgPack parsing and s...</span><br><span class="line">nlohmann-json        3.9.1            JSON for Modern C++</span><br><span class="line">parson               2020-09-14       a lighweight json library written in C</span><br><span class="line">picojson             1.3.0-1          A header-file-only, JSON parser serializer in C++.</span><br><span class="line">rapidjson            2020-09-14       A fast JSON parser&#x2F;generator for C++ with both SAX&#x2F;DOM style API &lt;http:&#x2F;&#x2F;rapid...</span><br><span class="line">sajson               2018-09-21       Lightweight, extremely high-performance JSON parser for C++11</span><br><span class="line">simdjson             0.7.1            A extremely fast JSON library that can parse gigabytes of JSON per second</span><br><span class="line">sqlcipher[json1]                      enable JSON functionality for sqlite3</span><br><span class="line">sqlite3[json1]                        enable JSON functionality for sqlite3</span><br><span class="line">taocpp-json          2020-09-14       C++ header-only JSON library</span><br><span class="line">valijson             2018-11-17-1     Header-only C++ library for JSON Schema validation</span><br><span class="line">yajl                 2.1.0-1          Yet Another JSON Library</span><br><span class="line"></span><br><span class="line">If your library is not listed, please open an issue at and&#x2F;or consider making a pull request:</span><br><span class="line">    https:&#x2F;&#x2F;github.com&#x2F;Microsoft&#x2F;vcpkg&#x2F;issues</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>已安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vcpkg(master) » .&#x2F;vcpkg list</span><br><span class="line">sqlite3:x86-windows         3.32.1           SQLite is a software library that implements a se...</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>c++</category>
+      </categories>
+      <tags>
+        <tag>c++、包管理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>read-committed下GAP锁问题</title>
+    <url>/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>建表语句</p>
+<p>同类问题及相关文档</p>
+<ul>
+<li><a href="https://www.cnblogs.com/zhjh256/p/6051839.html">mysql 5.6 read-committed隔离级别下并发插入唯一索引导致死锁一例（GAP锁的问题）</a></li>
+<li><a href="http://www.kokojia.com/article/42839.html">数据库：MySQL 普通索引和唯一索引的区别</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>GAP Deadlock</tag>
       </tags>
   </entry>
 </search>
