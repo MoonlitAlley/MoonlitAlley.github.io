@@ -308,7 +308,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-04-18 15:47:13" itemprop="dateModified" datetime="2021-04-18T15:47:13+08:00">2021-04-18</time>
+        <time title="Modified: 2021-04-18 15:51:30" itemprop="dateModified" datetime="2021-04-18T15:51:30+08:00">2021-04-18</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -367,7 +367,7 @@
 <blockquote>
 <p> <code>trx id 101037787572 lock_mode X locks gap before rec insert intention waiting</code></p>
 </blockquote>
-<p>文档中有对该错误的定义<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html#innodb-insert-intention-locks">Insert Intention Locks</a></p>
+<p>引用1 中有对该错误出现原因的详细分析，文档中有对该错误的定义<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html#innodb-insert-intention-locks">Insert Intention Locks</a></p>
 <blockquote>
 <p>An insert intention lock is a type of gap lock set by INSERT operations prior to row insertion</p>
 </blockquote>
@@ -378,7 +378,7 @@
 <h2 id="为什么会现Gap锁"><a href="#为什么会现Gap锁" class="headerlink" title="为什么会现Gap锁"></a>为什么会现Gap锁</h2><blockquote>
 <p> lock_mode X locks gap before rec insert intention waiting</p>
 </blockquote>
-<h3 id="RR及以上隔离级别为什么会出现-加锁策略"><a href="#RR及以上隔离级别为什么会出现-加锁策略" class="headerlink" title="RR及以上隔离级别为什么会出现 - 加锁策略"></a>RR及以上隔离级别为什么会出现 - 加锁策略</h3><p>引用1 中有对该错误出现原因的详细分析，对于这个错误的具体定义是：在事务插入数据过程中，为防止其他事务向索引上该位置插入数据，会在插入之前先申请插入意向范围锁，而如果申请插入意向范围锁被阻塞，则事务处于gap before rec insert intention waiting的等待状态。这篇文章中很形象的介绍了MySQL中的各类锁：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1798075">说说你是怎么解决MySQL死锁的</a></p>
+<h3 id="RR及以上隔离级别为什么会出现-加锁策略"><a href="#RR及以上隔离级别为什么会出现-加锁策略" class="headerlink" title="RR及以上隔离级别为什么会出现 - 加锁策略"></a>RR及以上隔离级别为什么会出现 - 加锁策略</h3><p>对于这个错误的具体定义是：在事务插入数据过程中，为防止其他事务向索引上该位置插入数据，会在插入之前先申请插入意向范围锁，而如果申请插入意向范围锁被阻塞，则事务处于gap before rec insert intention waiting的等待状态。这篇文章中很形象的介绍了MySQL中的各类锁：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1798075">说说你是怎么解决MySQL死锁的</a></p>
 <p>我们先看下 官方定义中insert 语句的加锁策略：</p>
 <blockquote>
 <p>“INSERT sets an exclusive lock on the inserted row. This lock is an index-record lock, not a next-key lock (that is, there is no gap lock) and does not prevent other sessions from inserting into the gap before the inserted row.<br>Prior to inserting the row, a type of gap lock called an insert intention gap lock is set. This lock signals the intent to insert in such a way that multiple transactions inserting into the same index gap need not wait for each other if they are not inserting at the same position within the gap. “</p>
@@ -866,6 +866,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/travel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ss Song">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MoonlitAlley">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/09/15/travel/" class="post-title-link" itemprop="url">travel</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2020-09-15 23:08:14 / Modified: 23:55:31" itemprop="dateCreated datePublished" datetime="2020-09-15T23:08:14+08:00">2020-09-15</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2020/09/15/travel/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/travel/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><img src="/2020/09/15/travel/082.jpeg"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -964,84 +1042,6 @@
 <hr>
 <p>title: categories<br>date: 2018-03-02 12:33:16<br>type: “categories”<br>comments: false</p>
 <hr>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/travel/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ss Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/15/travel/" class="post-title-link" itemprop="url">travel</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2020-09-15 23:08:14 / Modified: 23:55:31" itemprop="dateCreated datePublished" datetime="2020-09-15T23:08:14+08:00">2020-09-15</time>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/09/15/travel/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/travel/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="/2020/09/15/travel/082.jpeg"></p>
 
       
     </div>
