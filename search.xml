@@ -277,4 +277,58 @@
         <tag>GAP Deadlock</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Broken pipe的出现原因</title>
+    <url>/2021/04/20/Broken-pipe%E7%9A%84%E5%87%BA%E7%8E%B0%E5%8E%9F%E5%9B%A0/</url>
+    <content><![CDATA[<h1 id="背景说明"><a href="#背景说明" class="headerlink" title="背景说明"></a>背景说明</h1><p>最近在公司的私有化业务中碰到了一个读写Redis的Broken pipe问题，花了大半天时间查阅了各种文档，同时又复习了一遍计算机网络的三次握手、四次挥手等基础知识，才算勉强理解了问题出现的原因，也找到了几种解决办法。<br>由于私有化环境中很多系统操作都是没有权限执行的，向strace、tcpdump等等，所有下文中有用到相关的内容时，我会贴一下其他网站上找来的图，同时把源地址放到笔记最后的引用中。</p>
+<p>先来看一下驻场同时传来的错误日志:<br><img src="/2021/04/20/Broken-pipe%E7%9A%84%E5%87%BA%E7%8E%B0%E5%8E%9F%E5%9B%A0/problem-1.png"><br>对应的业务代码块如下(C++项目+ redis官方库hiredis)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">redisGetReply(redis, (void **)(&amp;raw_reply));</span><br><span class="line">redis_reply_ptr reply(raw_reply);</span><br><span class="line">json result(json::value_t::object);</span><br><span class="line">if (!reply || reply-&gt;type &#x3D;&#x3D; REDIS_REPLY_ERROR) &#123;</span><br><span class="line">    stringstream ss;</span><br><span class="line">    ss &lt;&lt; &quot;failed to retrieve profile for key &quot; &lt;&lt; key &lt;&lt; &quot;: &quot;</span><br><span class="line">       &lt;&lt; redis-&gt;errstr;</span><br><span class="line">    throw runtime_error(ss.str());</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>日志中有两种类型的错误，第一种是：Server close the connection; 第二种是：Broken pipe<br>我们先看来出现次数较多的Broken pipe问题。 </p>
+<blockquote>
+<p>这里需要把自己总结的问题处理方案记录一下：通常我们拿到一个错误的时候，快速定位且不容易跑偏的方法应该是有明确步骤的。 不然的话就会向一个刚开始工作的新手一样，猜测各种结论，然后说服自己接受，最后发现给出的是一个跑偏的或者无关的答案。<br>所以步骤应该是：1. 这个错误是哪里出现的（这一步要做到根故障定位，不只是这个文件、这个函数就够了）； 2. 为什么会出现这个错误？</p>
+</blockquote>
+<h2 id="错误是哪来的？"><a href="#错误是哪来的？" class="headerlink" title="错误是哪来的？"></a>错误是哪来的？</h2><p>首先我们能根据服务日志清楚的定位到抛出错误的代码块，再深入的定位感兴趣的同学可以翻一下hiredis的源码，hiredis.c中redisGetReply从fd里读取数据时处理了多种异常，其中的EAGAIN就是在另外一篇<a href>Resource temporarily unavailable的出现原因</a>中要分析的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">nread &#x3D; read(c-&gt;fd,buf,sizeof(buf));</span><br><span class="line">if (nread &#x3D;&#x3D; -1) &#123;</span><br><span class="line">    if ((errno &#x3D;&#x3D; EAGAIN &amp;&amp; !(c-&gt;flags &amp; REDIS_BLOCK)) || (errno &#x3D;&#x3D; EINTR)) &#123;</span><br><span class="line">        &#x2F;* Try again later *&#x2F;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; else if (nread &#x3D;&#x3D; 0) &#123;</span><br><span class="line">    __redisSetError(c,REDIS_ERR_EOF,&quot;Server closed the connection&quot;);</span><br><span class="line">    return REDIS_ERR;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    if (redisReaderFeed(c-&gt;reader,buf,nread) !&#x3D; REDIS_OK) &#123;</span><br><span class="line">        __redisSetError(c,c-&gt;reader-&gt;err,c-&gt;reader-&gt;errstr);</span><br><span class="line">        return REDIS_ERR;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>代码中没有找到<code>Broken pipe</code>出现的具体位置，但是根据读取时此处读取redis数据时多种网络错误的判断。到这个地步，应该能猜测与网络错误有关了。</p>
+<h2 id="为什么出现这个错误？"><a href="#为什么出现这个错误？" class="headerlink" title="为什么出现这个错误？"></a>为什么出现这个错误？</h2><p>首先是引用1中的一个截图<br><img src="/2021/04/20/Broken-pipe%E7%9A%84%E5%87%BA%E7%8E%B0%E5%8E%9F%E5%9B%A0/TCP-guide.jpeg"></p>
+<ol>
+<li>复现</li>
+<li>抓包观察<br>tcpdump + wireshark</li>
+</ol>
+<p>// todo</p>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ol>
+<li><a href="https://www.cnblogs.com/metoy/p/6565486.html">Broken pipe错误终极解释</a></li>
+<li><a href="https://angela.blog.csdn.net/article/details/106399521">一个生产网络问题Broken Pipe引发的思考</a></li>
+<li></li>
+</ol>
+]]></content>
+      <categories>
+        <category>网络</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Resource temporarily unavailable的出现原因</title>
+    <url>/2021/04/20/Resource-temporarily-unavailable%E7%9A%84%E5%87%BA%E7%8E%B0%E5%8E%9F%E5%9B%A0/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>网络</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>kafka的基本概念与使用</title>
+    <url>/2021/04/21/kafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E4%B8%8E%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Kafka</category>
+      </categories>
+      <tags>
+        <tag>Kafka</tag>
+      </tags>
+  </entry>
 </search>
