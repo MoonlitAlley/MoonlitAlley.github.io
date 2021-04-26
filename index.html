@@ -225,7 +225,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -238,7 +238,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -269,6 +269,225 @@
       
 
       
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/25/C11-ThreadPool%E5%8F%8A%E5%8C%85%E5%90%AB%E7%9A%84C11%E7%89%B9%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Saifei Song">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MoonlitAlley">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/25/C11-ThreadPool%E5%8F%8A%E5%8C%85%E5%90%AB%E7%9A%84C11%E7%89%B9%E6%80%A7/" class="post-title-link" itemprop="url">C11 ThreadPool及包含的C11特性</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-04-25 10:15:42" itemprop="dateCreated datePublished" datetime="2021-04-25T10:15:42+08:00">2021-04-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-04-26 13:30:48" itemprop="dateModified" datetime="2021-04-26T13:30:48+08:00">2021-04-26</time>
+      </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/04/25/C11-ThreadPool%E5%8F%8A%E5%8C%85%E5%90%AB%E7%9A%84C11%E7%89%B9%E6%80%A7/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/04/25/C11-ThreadPool%E5%8F%8A%E5%8C%85%E5%90%AB%E7%9A%84C11%E7%89%B9%E6%80%A7/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id><a href="#" class="headerlink" title></a></h1><h1 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h1><p>源码是github上搜索C++ ThreadPool排名第一个的实现，具体项目链接我放到了引用1中，代码中用到了很多C11特性，能通过这篇源码很好的学习一下线程池的概念以及C11一些新特性的用法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line">#ifndef THREAD_POOL_H</span><br><span class="line">#define THREAD_POOL_H</span><br><span class="line"></span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">#include &lt;queue&gt;</span><br><span class="line">#include &lt;memory&gt;</span><br><span class="line">#include &lt;thread&gt;</span><br><span class="line">#include &lt;mutex&gt;</span><br><span class="line">#include &lt;condition_variable&gt;</span><br><span class="line">#include &lt;future&gt;</span><br><span class="line">#include &lt;functional&gt;</span><br><span class="line">#include &lt;stdexcept&gt;</span><br><span class="line"></span><br><span class="line">class ThreadPool &#123;</span><br><span class="line">public:</span><br><span class="line">    ThreadPool(size_t);</span><br><span class="line">    template&lt;class F, class... Args&gt;</span><br><span class="line">    auto enqueue(F&amp;&amp; f, Args&amp;&amp;... args)</span><br><span class="line">        -&gt; std::future&lt;typename std::result_of&lt;F(Args...)&gt;::type&gt;;</span><br><span class="line">    ~ThreadPool();</span><br><span class="line">private:</span><br><span class="line">    &#x2F;&#x2F; need to keep track of threads so we can join them</span><br><span class="line">    std::vector&lt; std::thread &gt; workers;</span><br><span class="line">    &#x2F;&#x2F; the task queue</span><br><span class="line">    std::queue&lt; std::function&lt;void()&gt; &gt; tasks;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; synchronization</span><br><span class="line">    std::mutex queue_mutex;</span><br><span class="line">    std::condition_variable condition;</span><br><span class="line">    bool stop;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; the constructor just launches some amount of workers</span><br><span class="line">inline ThreadPool::ThreadPool(size_t threads)</span><br><span class="line">    :   stop(false)</span><br><span class="line">&#123;</span><br><span class="line">    for(size_t i &#x3D; 0;i&lt;threads;++i)</span><br><span class="line">        workers.emplace_back(</span><br><span class="line">            [this]</span><br><span class="line">            &#123;</span><br><span class="line">                for(;;)</span><br><span class="line">                &#123;</span><br><span class="line">                    std::function&lt;void()&gt; task;</span><br><span class="line"></span><br><span class="line">                    &#123;</span><br><span class="line">                        std::unique_lock&lt;std::mutex&gt; lock(this-&gt;queue_mutex);</span><br><span class="line">                        this-&gt;condition.wait(lock, [this]&#123; return this-&gt;stop || !this-&gt;tasks.empty(); &#125;);</span><br><span class="line">                        </span><br><span class="line">                        if(this-&gt;stop &amp;&amp; this-&gt;tasks.empty())</span><br><span class="line">                            return;</span><br><span class="line">                        </span><br><span class="line">                        task &#x3D; std::move(this-&gt;tasks.front());</span><br><span class="line">                        this-&gt;tasks.pop();</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    task();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; add new work item to the pool</span><br><span class="line">template&lt;class F, class... Args&gt;</span><br><span class="line">auto ThreadPool::enqueue(F&amp;&amp; f, Args&amp;&amp;... args) -&gt; std::future&lt;typename std::result_of&lt;F(Args...)&gt;::type&gt;</span><br><span class="line">&#123;</span><br><span class="line">    using return_type &#x3D; typename std::result_of&lt;F(Args...)&gt;::type;</span><br><span class="line"></span><br><span class="line">    auto task &#x3D; std::make_shared&lt; std::packaged_task&lt;return_type()&gt; &gt;(</span><br><span class="line">            std::bind(std::forward&lt;F&gt;(f), std::forward&lt;Args&gt;(args)...)</span><br><span class="line">        );</span><br><span class="line">        </span><br><span class="line">    std::future&lt;return_type&gt; res &#x3D; task-&gt;get_future();</span><br><span class="line">    &#123;</span><br><span class="line">        std::unique_lock&lt;std::mutex&gt; lock(queue_mutex);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; don&#39;t allow enqueueing after stopping the pool</span><br><span class="line">        if(stop)</span><br><span class="line">            throw std::runtime_error(&quot;enqueue on stopped ThreadPool&quot;);</span><br><span class="line"></span><br><span class="line">        tasks.emplace(</span><br><span class="line">                      [task]()&#123; (*task)(); &#125;</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">    condition.notify_one();</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; the destructor joins all threads</span><br><span class="line">inline ThreadPool::~ThreadPool()</span><br><span class="line">&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        std::unique_lock&lt;std::mutex&gt; lock(queue_mutex);</span><br><span class="line">        stop &#x3D; true;</span><br><span class="line">    &#125;</span><br><span class="line">    condition.notify_all();</span><br><span class="line">    for(std::thread &amp;worker: workers)</span><br><span class="line">        worker.join();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#endif</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<ol>
+<li>function&amp;bind</li>
+<li>unique_lock</li>
+<li>condition_variable</li>
+<li>result_of&amp;future</li>
+</ol>
+<h1 id="function-amp-bind"><a href="#function-amp-bind" class="headerlink" title="function&amp;bind"></a>function&amp;bind</h1><p>待补充…</p>
+<h1 id="unique-lock"><a href="#unique-lock" class="headerlink" title="unique_lock"></a>unique_lock</h1><p>待补充…</p>
+<h1 id="condition-variable"><a href="#condition-variable" class="headerlink" title="condition_variable"></a>condition_variable</h1><p>待补充…</p>
+<h2 id="头文件"><a href="#头文件" class="headerlink" title="头文件"></a>头文件</h2><p>C++11 标准中 <condition_variable> 头文件主要包含了与条件变量相关的类和函数。<br>相关的类包括 </condition_variable></p>
+<ul>
+<li>std::condition_variable</li>
+<li>std::condition_variable_any</li>
+<li>枚举类型std::cv_status</li>
+<li>std::notify_all_at_thread_exit()</li>
+</ul>
+<h2 id="condition-variable的工作原理"><a href="#condition-variable的工作原理" class="headerlink" title="condition_variable的工作原理"></a>condition_variable的工作原理</h2><p>当 std::condition_variable 对象的某个 wait 函数被调用的时候，它使用 std::unique_lock(通过 std::mutex) 来锁住当前线程。当前线程会一直被阻塞，直到另外一个线程在相同的 std::condition_variable 对象上调用了 notification 函数来唤醒当前线程。<br>（condition_variable通常使用std::unique_lock(std::mutex)来等待，也可以使用其他lockable类型。）</p>
+<h2 id="成员函数介绍"><a href="#成员函数介绍" class="headerlink" title="成员函数介绍"></a>成员函数介绍</h2><h3 id="std-condition-variable-构造函数"><a href="#std-condition-variable-构造函数" class="headerlink" title="std::condition_variable 构造函数"></a>std::condition_variable 构造函数</h3><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>default (1)</td>
+<td>condition_variable();</td>
+</tr>
+<tr>
+<td>copy [deleted] (2)</td>
+<td>condition_variable (const condition_variable&amp;) = delete;</td>
+</tr>
+</tbody></table>
+<p>std::condition_variable 的拷贝构造函数被禁用，只提供了默认构造函数。</p>
+<h3 id="std-condition-variable-wait-介绍"><a href="#std-condition-variable-wait-介绍" class="headerlink" title="std::condition_variable::wait() 介绍"></a>std::condition_variable::wait() 介绍</h3><table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">unconditional (1)</td>
+<td align="left">void wait (unique_lock<mutex>&amp; lck);</mutex></td>
+</tr>
+<tr>
+<td align="left">predicate (2)</td>
+<td align="left">template <class predicate> void wait (unique_lock<mutex>&amp; lck, Predicate pred);</mutex></class></td>
+</tr>
+</tbody></table>
+<p>std::condition_variable 提供了两种 wait() 函数。</p>
+<ul>
+<li>当前线程调用 wait() 后将被阻塞(此时当前线程应该获得了锁（mutex），不妨设获得锁 lck)，直到另外某个线程调用 notify_* 唤醒了当前线程。<br>在线程被阻塞时，该函数会自动调用 lck.unlock() 释放锁，使得其他被阻塞在锁竞争上的线程得以继续执行。另外，一旦当前线程获得通知(notified，通常是另外某个线程调用 notify_* 唤醒了当前线程)，wait() 函数也是自动调用 lck.lock()，使得 lck 的状态和 wait 函数被调用时相同。</li>
+<li>在第二种情况下（即设置了 Predicate），只有当 pred 条件为 false 时调用 wait() 才会阻塞当前线程，并且在收到其他线程的通知后只有当 pred 为 true 时才会被解除阻塞。</li>
+</ul>
+<p>pred可以为函数或者lamda表达式，类似于代码中的等待唤醒线程时，需要等待unique_lock且任务对列不为空</p>
+<blockquote>
+<p><code>this-&gt;condition.wait(lock, [this]&#123; return this-&gt;stop || !this-&gt;tasks.empty(); &#125;);</code></p>
+</blockquote>
+<h3 id="std-condition-variable-wait-for-介绍"><a href="#std-condition-variable-wait-for-介绍" class="headerlink" title="std::condition_variable::wait_for() 介绍"></a>std::condition_variable::wait_for() 介绍</h3><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>unconditional (1)</td>
+<td>template &lt;class Rep, class Period&gt; <br> cv_status wait_for (unique_lock<mutex>&amp; lck, const chrono::duration&lt;Rep,Period&gt;&amp; rel_time);</mutex></td>
+</tr>
+<tr>
+<td>predicate (2)</td>
+<td>template &lt;class Rep, class Period, class Predicate&gt; <br> bool wait_for (unique_lock<mutex>&amp; lck, const chrono::duration&lt;Rep,Period&gt;&amp; rel_time, Predicate pred);</mutex></td>
+</tr>
+</tbody></table>
+<p>与 std::condition_variable::wait() 类似，不过 wait_for 可以指定一个时间段，在当前线程收到通知或者指定的时间 rel_time 超时之前，该线程都会处于阻塞状态。而一旦超时或者收到了其他线程的通知，wait_for 返回，剩下的处理步骤和 wait() 类似。</p>
+<p>另外，wait_for 的重载版本（predicte(2)）的最后一个参数 pred 表示 wait_for 的预测条件，只有当 pred 条件为 false 时调用 wait() 才会阻塞当前线程，并且在收到其他线程的通知后只有当 pred 为 true 时才会被解除阻塞，因此相当于如下代码：<br><code>return wait_until (lck, chrono::steady_clock::now() + rel_time, std::move(pred));</code><br>下面这个示例相当于该线程再收到lck之前，每秒超时打印一次’.’字符。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">std::unique_lock&lt;std::mutex&gt; lck(mtx);</span><br><span class="line">while (cv.wait_for(lck,std::chrono::seconds(1)) &#x3D;&#x3D; std::cv_status::timeout) &#123;</span><br><span class="line">    std::cout &lt;&lt; &#39;.&#39;;</span><br><span class="line">    std::cout.flush();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="std-condition-variable-wait-until-介绍"><a href="#std-condition-variable-wait-until-介绍" class="headerlink" title="std::condition_variable::wait_until 介绍"></a>std::condition_variable::wait_until 介绍</h3><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>unconditional (1)</td>
+<td>template &lt;class Clock, class Duration&gt; <br> cv_status wait_until (unique_lock<mutex>&amp; lck, const chrono::time_point&lt;Clock,Duration&gt;&amp; abs_time);</mutex></td>
+</tr>
+<tr>
+<td>predicate (2)</td>
+<td>template &lt;class Clock, class Duration, class Predicate&gt; <br> bool wait_until (unique_lock<mutex>&amp; lck, const chrono::time_point&lt;Clock,Duration&gt;&amp; abs_time, Predicate pred);｜</mutex></td>
+</tr>
+</tbody></table>
+<p>与 std::condition_variable::wait_for 类似，但是 wait_until 可以指定一个时间点，在当前线程收到通知或者指定的时间点 abs_time 超时之前，该线程都会处于阻塞状态。而一旦超时或者收到了其他线程的通知，wait_until 返回，剩下的处理步骤和 wait_until() 类似。</p>
+<p>另外，wait_until 的重载版本（predicte(2)）的最后一个参数 pred 表示 wait_until 的预测条件，只有当 pred 条件为 false 时调用 wait() 才会阻塞当前线程，并且在收到其他线程的通知后只有当 pred 为 true 时才会被解除阻塞，因此相当于如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">while (!pred())</span><br><span class="line">  if ( wait_until(lck,abs_time) &#x3D;&#x3D; cv_status::timeout)</span><br><span class="line">    return pred();</span><br><span class="line">return true;</span><br></pre></td></tr></table></figure>
+
+<h3 id="std-condition-variable-notify-one"><a href="#std-condition-variable-notify-one" class="headerlink" title="std::condition_variable::notify_one()"></a>std::condition_variable::notify_one()</h3><p>唤醒某个等待(wait)线程。如果当前没有等待线程，则该函数什么也不做，如果同时存在多个等待线程，则唤醒某个线程是不确定的(unspecified)。</p>
+<h3 id="std-condition-variable-notify-all"><a href="#std-condition-variable-notify-all" class="headerlink" title="std::condition_variable::notify_all()"></a>std::condition_variable::notify_all()</h3><p>唤醒所有的等待(wait)线程。如果当前没有等待线程，则该函数什么也不做。</p>
+<h3 id="std-cv-status-枚举类型介绍"><a href="#std-cv-status-枚举类型介绍" class="headerlink" title="std::cv_status 枚举类型介绍"></a>std::cv_status 枚举类型介绍</h3><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>cv_status::no_timeout</td>
+<td>wait_for 或者 wait_until 没有超时，即在规定的时间段内线程收到了通知。</td>
+</tr>
+<tr>
+<td>cv_status::timeout</td>
+<td>wait_for 或者 wait_until 超时。</td>
+</tr>
+</tbody></table>
+<h3 id="std-notify-all-at-thread-exit"><a href="#std-notify-all-at-thread-exit" class="headerlink" title="std::notify_all_at_thread_exit"></a>std::notify_all_at_thread_exit</h3><p>函数原型为：<br>void notify_all_at_thread_exit (condition_variable&amp; cond, unique_lock<mutex> lck);<br>当调用该函数的线程退出时，所有在 cond 条件变量上等待的线程都会收到通知。<br>这个成员函数的示例还需要再研究一下。<br>// TODO</mutex></p>
+<h1 id="result-of-amp-future"><a href="#result-of-amp-future" class="headerlink" title="result_of &amp; future"></a>result_of &amp; future</h1><p>待补充…<br>result_of和decltype<br>示例如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">template&lt;class Func, class... Args&gt;</span><br><span class="line">auto getResult(Func &amp;&amp; func, Args&amp;&amp;... args) -&gt; typename std::result_of&lt;Func(Args...)&gt;::type &#123;</span><br><span class="line">    return func(args...);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(int argc, const char * argv[]) &#123;</span><br><span class="line"></span><br><span class="line">    auto sum_result &#x3D; getResult([](int a, int b) -&gt;decltype(a+b)&#123; return a + b; &#125;, 3, 2);</span><br><span class="line">    cout&lt;&lt; &quot;we get sum result: &quot; &lt;&lt; sum_result &lt;&lt; endl;</span><br><span class="line">    </span><br><span class="line">    auto float_result &#x3D; getResult([](int a, int b) -&gt;decltype(float(a)&#x2F; float(b)) &#123; return float(a) &#x2F; float(b); &#125;, 3, 2);</span><br><span class="line">    auto int_result &#x3D; getResult([](int a, int b) -&gt;decltype(a&#x2F;b) &#123; return float(a) &#x2F; float(b); &#125;, 3, 2);</span><br><span class="line">    cout &lt;&lt; &quot;we get float result: &quot; &lt;&lt; float_result &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; &quot;we get int result: &quot; &lt;&lt; int_result &lt;&lt; endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">we get sum result: 5</span><br><span class="line">we get float result: 1.5</span><br><span class="line">we get int result: 1</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/progschj/ThreadPool">progschj/ThreadPool</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/haippy/p/3237213.html">C++11 并发指南三(std::mutex 详解)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/haippy/p/3252041.html">C++11 并发指南五(std::condition_variable 详解)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ailumiyana/p/10016965.html">基于C++11实现线程池的工作原理</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -480,7 +699,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-04-21 14:04:51" itemprop="dateModified" datetime="2021-04-21T14:04:51+08:00">2021-04-21</time>
+        <time title="Modified: 2021-04-23 14:58:40" itemprop="dateModified" datetime="2021-04-23T14:58:40+08:00">2021-04-23</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1216,125 +1435,6 @@
     
     <div class="post-body" itemprop="articleBody">
           <p><img src="/2020/09/15/travel/082.jpeg"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Saifei Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">travel</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-09-15 23:08:14" itemprop="dateCreated datePublished" datetime="2020-09-15T23:08:14+08:00">2020-09-15</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2020-09-16 23:05:05" itemprop="dateModified" datetime="2020-09-16T23:05:05+08:00">2020-09-16</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">搭建</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>基础搭建</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;cbf8ba8af532</span><br></pre></td></tr></table></figure>
-<p>官方手册</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;theme-next.iissnan.com&#x2F;getting-started.html</span><br></pre></td></tr></table></figure>
-
-<p>阅读全文</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- more --&gt;</span><br></pre></td></tr></table></figure>
-
-<p>添加搜索</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;112f3eae2098</span><br></pre></td></tr></table></figure>
-
-<p>添加评论功能</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;83cf3e358c8e</span><br><span class="line"></span><br><span class="line">https:&#x2F;&#x2F;blog.csdn.net&#x2F;jiunian_2761&#x2F;article&#x2F;details&#x2F;97388997</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/15/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/comments.png"></p>
-<p>1.新建一个页面，命名为categories:</p>
-<p>hexo new page categories</p>
-<p>之所以命名为categories的原因是在next主题的配置文件中，categories是关键词。</p>
-<p>2.编辑新建界面，将页面类型设置为categories，主题将会在这个页面上显示所有的分类：</p>
-<hr>
-<p>title: categories<br>date: 2018-03-02 12:33:16<br>type: “categories”</p>
-<hr>
-<p>这个步骤很有意思，编辑新建界面是什么？当然hexo熟悉一些自然会知道，但是小萌新还是比较懵逼的。实际上调用hexo new page xxx后，会在/source/categories/目录下生成一个index.md文档，在此文档头部加上上面这段即可。实际上，index.md里只需要有这个声明即可，其他内容并不会显示出来，写了也没用。</p>
-<p>PS. 无论是page，还是post的文章，都是以.md格式结尾，在hexo g的过程中会产生对应的.html文档，然后hexo d到Github上的也只是html文档，不是.md格式的文档。</p>
-<p>另外就是，需要注意一点：如果有启用多说 或者 Disqus 评论，默认页面也会带有评论。需要关闭的话，请添加字段 comments 并将值设置为 false，如：</p>
-<hr>
-<p>title: categories<br>date: 2018-03-02 12:33:16<br>type: “categories”<br>comments: false</p>
-<hr>
 
       
     </div>
