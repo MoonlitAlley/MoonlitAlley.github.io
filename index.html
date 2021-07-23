@@ -225,7 +225,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -238,7 +238,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -269,6 +269,114 @@
       
 
       
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/21/MySQL%E4%B8%AD%E7%9A%84%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Saifei Song">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MoonlitAlley">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/21/MySQL%E4%B8%AD%E7%9A%84%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95/" class="post-title-link" itemprop="url">MySQL中的覆盖索引</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-05-21 17:31:01 / Modified: 17:49:31" itemprop="dateCreated datePublished" datetime="2021-05-21T17:31:01+08:00">2021-05-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/05/21/MySQL%E4%B8%AD%E7%9A%84%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/21/MySQL%E4%B8%AD%E7%9A%84%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>昨天滴滴面试被问到这样一个问题：</p>
+<blockquote>
+<p>假设存在一个person表， 表中有ID，name，sex三个字段， 然后name与sex是一个联合索引。<br>你能说明一下<code>select name, sex from person where name = &#39;A&#39;;</code>这个语句的查询过程中用到的索引么？</p>
+</blockquote>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><pre><code>当然，面试官不是直接就问我这个语句的，他的开始是想让我讲一下`覆盖索引`的定义及使用情况。我确实不了解这个`覆盖`的概念，就问了面试官“是非聚集索引查询过程中的回表操作么？”。
+面试官没有直接否认，而是说：“没关系，概念这些不重要，咱们举一个具体的例子你来给我讲一下用到的索引吧”，于是有了上面这个问题。</code></pre>
+<h1 id="知识背景"><a href="#知识背景" class="headerlink" title="知识背景"></a>知识背景</h1><p>在分析这个问题之前，咱们需要先做一下基础知识准备。 可以通过以下几个问题逐渐过渡到面试官的问题上。</p>
+<h2 id="什么是回表查询"><a href="#什么是回表查询" class="headerlink" title="什么是回表查询"></a>什么是回表查询</h2><p>InnoDB的索引实现有两大类</p>
+<ul>
+<li>聚集索引（clustered index）</li>
+<li>普通索引（secondary index）<br>有很多解释什么是聚集索引和非聚集索引的文章，这里只列一下两者的区别：</li>
+</ul>
+<ol>
+<li>聚集索引的叶子结点存储行记录<ol>
+<li>InnoDB必须有且只有一个聚集索引</li>
+<li>如果表定义了PK，则PK就是聚集索引</li>
+<li>如果表没有定义PK，则第一个not NULL unique列是聚集索引</li>
+<li>否则InnoDB会创建一个隐藏的row-id作为聚集索引</li>
+</ol>
+</li>
+<li>普通索引的叶子结点存储主键值<br>还有一个区别点事曾经</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -1367,84 +1475,6 @@
     
     <div class="post-body" itemprop="articleBody">
           
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/15/travel/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Saifei Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/15/travel/" class="post-title-link" itemprop="url">travel</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2020-09-15 23:08:14 / Modified: 23:55:31" itemprop="dateCreated datePublished" datetime="2020-09-15T23:08:14+08:00">2020-09-15</time>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2020/09/15/travel/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/15/travel/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="/2020/09/15/travel/082.jpeg"></p>
-
       
     </div>
 
