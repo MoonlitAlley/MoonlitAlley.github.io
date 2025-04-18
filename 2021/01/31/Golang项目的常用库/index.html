@@ -30,7 +30,7 @@
 <meta property="og:description" content="[TOC] 类型转化spf13&#x2F;cast 官方说明 Easy and safe casting from one type to another in Go  Cast is a library to convert between different go types in a consistent and easy way.   使用示例Example ‘ToString’: 12345678">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-01-31T08:53:27.000Z">
-<meta property="article:modified_time" content="2021-01-31T09:45:47.482Z">
+<meta property="article:modified_time" content="2025-04-17T14:57:04.693Z">
 <meta property="article:author" content="ss Song">
 <meta property="article:tag" content="Gloang">
 <meta name="twitter:card" content="summary">
@@ -231,14 +231,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -306,10 +306,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2021-01-31 16:53:27 / Modified: 17:45:47" itemprop="dateCreated datePublished" datetime="2021-01-31T16:53:27+08:00">2021-01-31</time>
+      <time title="Created: 2021-01-31 16:53:27" itemprop="dateCreated datePublished" datetime="2021-01-31T16:53:27+08:00">2021-01-31</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2025-04-17 22:57:04" itemprop="dateModified" datetime="2025-04-17T22:57:04+08:00">2025-04-17</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -353,9 +359,9 @@
 </blockquote>
 </blockquote>
 <h4 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h4><p>Example ‘ToString’:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cast.ToString(&quot;mayonegg&quot;)         &#x2F;&#x2F; &quot;mayonegg&quot;</span><br><span class="line">cast.ToString(8)                  &#x2F;&#x2F; &quot;8&quot;</span><br><span class="line">cast.ToString(8.31)               &#x2F;&#x2F; &quot;8.31&quot;</span><br><span class="line">cast.ToString([]byte(&quot;one time&quot;)) &#x2F;&#x2F; &quot;one time&quot;</span><br><span class="line">cast.ToString(nil)                &#x2F;&#x2F; &quot;&quot;</span><br><span class="line"></span><br><span class="line">var foo interface&#123;&#125; &#x3D; &quot;one more time&quot;</span><br><span class="line">cast.ToString(foo)                &#x2F;&#x2F; &quot;one more time&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cast.ToString(<span class="string">&quot;mayonegg&quot;</span>)         <span class="comment">// &quot;mayonegg&quot;</span></span><br><span class="line">cast.ToString(<span class="number">8</span>)                  <span class="comment">// &quot;8&quot;</span></span><br><span class="line">cast.ToString(<span class="number">8.31</span>)               <span class="comment">// &quot;8.31&quot;</span></span><br><span class="line">cast.ToString([]<span class="keyword">byte</span>(<span class="string">&quot;one time&quot;</span>)) <span class="comment">// &quot;one time&quot;</span></span><br><span class="line">cast.ToString(<span class="literal">nil</span>)                <span class="comment">// &quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo <span class="keyword">interface</span>&#123;&#125; = <span class="string">&quot;one more time&quot;</span></span><br><span class="line">cast.ToString(foo)                <span class="comment">// &quot;one more time&quot;</span></span><br></pre></td></tr></table></figure>
 <p>当我们在项目（be-derive）中需要根据配置来决定返回值类型时，可以使用cast在最后阶段完成一个“统一的操作”</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">func (this *Derive) formatCalcResult(val interface&#123;&#125;, typeName string) interface&#123;&#125; &#123;</span><br><span class="line">	switch typeName &#123;</span><br><span class="line">	case &quot;float&quot;:</span><br><span class="line">		fallthrough</span><br><span class="line">	case &quot;double&quot;:</span><br><span class="line">		return math.Trunc(cast.ToFloat64(val)*1e2+0.5) * 1e-2</span><br><span class="line">	case &quot;int&quot;:</span><br><span class="line">		return math.Trunc(cast.ToFloat64(val))</span><br><span class="line">	default:</span><br><span class="line">		return val</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *Derive)</span> <span class="title">formatCalcResult</span><span class="params">(val <span class="keyword">interface</span>&#123;&#125;, typeName <span class="keyword">string</span>)</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">switch</span> typeName &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="string">&quot;float&quot;</span>:</span><br><span class="line">		<span class="keyword">fallthrough</span></span><br><span class="line">	<span class="keyword">case</span> <span class="string">&quot;double&quot;</span>:</span><br><span class="line">		<span class="keyword">return</span> math.Trunc(cast.ToFloat64(val)*<span class="number">1e2</span>+<span class="number">0.5</span>) * <span class="number">1e-2</span></span><br><span class="line">	<span class="keyword">case</span> <span class="string">&quot;int&quot;</span>:</span><br><span class="line">		<span class="keyword">return</span> math.Trunc(cast.ToFloat64(val))</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="keyword">return</span> val</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="json处理"><a href="#json处理" class="headerlink" title="json处理"></a>json处理</h2><p><a target="_blank" rel="noopener" href="https://github.com/tidwall/gjson">tidwall/gjson</a><br><a target="_blank" rel="noopener" href="https://github.com/tidwall/sjson">tidwall/sjon</a></p>
 <h4 id="官方说明-1"><a href="#官方说明-1" class="headerlink" title="官方说明"></a>官方说明</h4><blockquote>
