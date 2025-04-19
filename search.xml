@@ -194,12 +194,54 @@
   <entry>
     <title>read-committed下GAP锁问题</title>
     <url>/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<p>建表语句</p>
-<p>同类问题及相关文档</p>
+    <content><![CDATA[<p>[TOC]</p>
+<p>最近在定位一个数据库偶尔出现死锁的问题， 现象就是数据库在read-committed隔离级别下出现GAP锁，导致部分insert语句发生死锁、业务侧超时。<br>在这里记录下排查过程和结论，同时讨论以下几个问题<br>数据库各隔离级别及GAP锁的定义<br>GAP锁为什么会出现在read-committed隔离级别下<br>从哪些角度能避免死锁问题（在当前场景下）</p>
+<h3 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h3><p>先讲一下背景，业务中对数据库的操作分为读、更新、插入三类， 其中因为对数据库更新某个key的特定field的value时，因为无法判断该值是否已经写入到数据库中了， 所以需要使用on duplicate key 语句。<br>如果想避免该语句的话，也有几种方案可以实现此功能， 这个在后面的部分来讨论，大致来说就是将一条 on duplicate key 拆分为update 和 insert，需要的时候再使用 insert。<br>执行语句<br>业务中所有的数据库插入语句都是这种格式，执行语句中具体拼接的数量可以动态配置，默认情况下同key的不同field才会进行合并，大概5-10个field合并为一个执行语句。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">table</span> (<span class="string">`key`</span>,<span class="string">`originalKey`</span>,<span class="string">`field`</span>,<span class="string">`value`</span>)</span><br><span class="line"><span class="keyword">values</span></span><br><span class="line">(),</span><br><span class="line">...</span><br><span class="line"><span class="keyword">ON</span> <span class="keyword">DUPLICATE</span> <span class="keyword">KEY</span> <span class="keyword">UPDATE</span> <span class="string">`value`</span> = <span class="keyword">VALUES</span>(<span class="keyword">value</span>), <span class="string">`expire`</span>= <span class="keyword">VALUES</span>(<span class="keyword">expire</span>), <span class="string">`modifyTime`</span> = <span class="keyword">NOW</span>()</span><br></pre></td></tr></table></figure>
+<h4 id="为什么不用replace？"><a href="#为什么不用replace？" class="headerlink" title="为什么不用replace？"></a>为什么不用replace？</h4><p>on duplicate key 与  replace的性能差异(有时间了再补充相关文档)<br>replace在检测的key冲突是执行的具体语句为 delete + insert，该操作将额外进行两次索引操作。<br>建表语句</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> <span class="string">`profile_storage`</span> <span class="comment">/*!40100 DEFAULT CHARACTER SET utf8mb4 */</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`storage_cluster`</span> (</span><br><span class="line"> <span class="string">`id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line"> <span class="string">`key`</span> <span class="built_in">varchar</span>(<span class="number">128</span>) <span class="keyword">COLLATE</span> utf8mb4_bin <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">&#x27;存储key&#x27;</span>,</span><br><span class="line"> <span class="string">`originalKey`</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">COLLATE</span> utf8mb4_bin <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">&#x27;原始key&#x27;</span>,</span><br><span class="line"> <span class="string">`field`</span> <span class="built_in">varchar</span>(<span class="number">128</span>) <span class="keyword">COLLATE</span> utf8mb4_bin <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">&#x27;存储列名&#x27;</span>,</span><br><span class="line"> <span class="string">`value`</span> <span class="built_in">blob</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">&#x27;value, json&#x27;</span>,</span><br><span class="line"> <span class="string">`expire`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">&#x27;写入时的有效时间，清理结合modifyTime+expire即可&#x27;</span>,</span><br><span class="line"> <span class="string">`modifyTime`</span> <span class="built_in">timestamp</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line"> PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line"> <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> <span class="string">`key_field`</span> (<span class="string">`key`</span>,<span class="string">`field`</span>),</span><br><span class="line"> <span class="keyword">KEY</span> <span class="string">`modify_time`</span> (<span class="string">`modifyTime`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8mb4 <span class="keyword">COLLATE</span>=utf8mb4_bin <span class="keyword">COMMENT</span>=<span class="string">&#x27;画像数据存储&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>隔离级别</p>
+<blockquote>
+<p>tx_isolation = READ-COMMITTED</p>
+</blockquote>
+<h3 id="排查过程"><a href="#排查过程" class="headerlink" title="排查过程"></a>排查过程</h3><p>使用腾讯云DBbrain<br>我们使用的腾讯云的MySQL，腾讯云提供的数据库智能管家DBbrain可以很方便的查看当前和历史时刻的数据库状态。刚好这两天发生了一次deadlock，通过这个截图可以看下DBbrain的总览。<br><img src="/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/dead_lock.png"></p>
+<p>当点击死锁字段时会自动跳转到错误日志界面（包含事件详情和死锁快照）， 下面是死锁快照部分的具体日志</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">------------------------</span><br><span class="line">2021-04-18 11:18:47 0x7ff915060700</span><br><span class="line">*** (1) TRANSACTION:</span><br><span class="line">TRANSACTION 101037787573, ACTIVE 0 sec inserting</span><br><span class="line">mysql tables <span class="keyword">in</span> use 1, locked 1</span><br><span class="line">LOCK WAIT 2 lock struct(s), heap size 1136, 1 row lock(s), undo <span class="built_in">log</span> entries 2</span><br><span class="line">MySQL thread id 3527624187, OS thread handle 140694797604608, query id 72846449145 10.0.129.132 smonline update</span><br><span class="line">INSERT INTO `storage_cluster` ( `id`,`key`,`originalKey`,`field`,`value`,`expire` ) VALUES ( <span class="string">&#x27;0&#x27;</span>, <span class="string">&#x27;15de83fc9a9f9834d8f4d7bfa9ff4713&#x27;</span>, <span class="string">&#x27;profile:smid:2020091521544905a3711528ba4a2e159d6f2230360a5001b6047b1f8904e4&#x27;</span>, <span class="string">&#x27;b_device_manufacturer&#x27;</span>, <span class="string">&#x27;\&quot;xiaomi\&quot;&#x27;</span>, 15552000 ) , ( <span class="string">&#x27;0&#x27;</span>, <span class="string">&#x27;15de83fc9a9f9834d8f4d7bfa9ff4713&#x27;</span>, <span class="string">&#x27;profile:smid:2020091521544905a3711528ba4a2e159d6f2230360a5001b6047b1f8904e4&#x27;</span>, <span class="string">&#x27;device_score&#x27;</span>, <span class="string">&#x27;199&#x27;</span>, 15552000 ) , ( <span class="string">&#x27;0&#x27;</span>, <span class="string">&#x27;15de83fc9a9f9834d8f4d7bfa9ff4713&#x27;</span>, <span class="string">&#x27;profile:smid:2020091521544905a3711528ba4a2e159d6f2230360a5001b6047b1f8904e4&#x27;</span>, <span class="string">&#x27;last_active_time&#x27;</span>, <span class="string">&#x27;1618715927103&#x27;</span>, 15552000 ) ON DUPLICATE KEY UPDATE `value` = VALUES(value), `expire`= VALUES(expire), `modifyTime` = NOW()</span><br><span class="line">*** (1) WAITING FOR THIS LOCK TO BE GRANTED:</span><br><span class="line">RECORD LOCKS space id 43 page no 27774151 n bits 328 index key_field of table `profile_storage`.`storage_cluster` trx id 101037787573 lock_mode X waiting</span><br><span class="line">Record lock, heap no 2 PHYSICAL RECORD: n_fields 3; compact format; info bits 0</span><br><span class="line"> 0: len 30; hex 313564653833666339613966393833346438663464376266613966663437; asc 15de83fc9a9f9834d8f4d7bfa9ff47; (total 32 bytes);</span><br><span class="line"> 1: len 12; hex 6465766963655f73636f7265; asc device_score;;</span><br><span class="line"> 2: len 8; hex 8000000e95317813; asc 1x ;;</span><br><span class="line"></span><br><span class="line">*** (2) TRANSACTION:</span><br><span class="line">TRANSACTION 101037787572, ACTIVE 0 sec inserting</span><br><span class="line">mysql tables <span class="keyword">in</span> use 1, locked 1</span><br><span class="line">4 lock struct(s), heap size 1136, 3 row lock(s), undo <span class="built_in">log</span> entries 1</span><br><span class="line">MySQL thread id 3527607500, OS thread handle 140707776300800, query id 72846449143 10.0.129.31 smonline update</span><br><span class="line">INSERT INTO `storage_cluster` ( `id`,`key`,`originalKey`,`field`,`value`,`expire` ) VALUES ( <span class="string">&#x27;0&#x27;</span>, <span class="string">&#x27;15de83fc9a9f9834d8f4d7bfa9ff4713&#x27;</span>, <span class="string">&#x27;profile:smid:2020091521544905a3711528ba4a2e159d6f2230360a5001b6047b1f8904e4&#x27;</span>, <span class="string">&#x27;bssid&#x27;</span>, <span class="string">&#x27;\&quot;020000000000\&quot;&#x27;</span>, 172800 ) ON DUPLICATE KEY UPDATE `value` = VALUES(value), `expire`= VALUES(expire), `modifyTime` = NOW()</span><br><span class="line">*** (2) HOLDS THE LOCK(S):</span><br><span class="line">RECORD LOCKS space id 43 page no 27774151 n bits 328 index key_field of table `profile_storage`.`storage_cluster` trx id 101037787572 lock_mode X</span><br><span class="line">Record lock, heap no 2 PHYSICAL RECORD: n_fields 3; compact format; info bits 0</span><br><span class="line"> 0: len 30; hex 313564653833666339613966393833346438663464376266613966663437; asc 15de83fc9a9f9834d8f4d7bfa9ff47; (total 32 bytes);</span><br><span class="line"> 1: len 12; hex 6465766963655f73636f7265; asc device_score;;</span><br><span class="line"> 2: len 8; hex 8000000e95317813; asc 1x ;;</span><br><span class="line"></span><br><span class="line">*** (2) WAITING FOR THIS LOCK TO BE GRANTED:</span><br><span class="line">RECORD LOCKS space id 43 page no 27774151 n bits 328 index key_field of table `profile_storage`.`storage_cluster` trx id 101037787572 lock_mode X locks gap before rec insert intention waiting</span><br><span class="line">Record lock, heap no 2 PHYSICAL RECORD: n_fields 3; compact format; info bits 0</span><br><span class="line"> 0: len 30; hex 313564653833666339613966393833346438663464376266613966663437; asc 15de83fc9a9f9834d8f4d7bfa9ff47; (total 32 bytes);</span><br><span class="line"> 1: len 12; hex 6465766963655f73636f7265; asc device_score;;</span><br><span class="line"> 2: len 8; hex 8000000e95317813; asc 1x ;;</span><br><span class="line"></span><br><span class="line">*** WE ROLL BACK TRANSACTION (1)</span><br></pre></td></tr></table></figure>
+<p>使用MySQL日志<br>这部分内容同样可以通过MySQL本身的错误日志查看MySQL - The Error Log）</p>
+<h3 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h3><p>通过日志描述可以清楚定位发生死锁的两条语句和死锁详情</p>
+<h4 id="为什么出现并发？"><a href="#为什么出现并发？" class="headerlink" title="为什么出现并发？"></a>为什么出现并发？</h4><p>业务中该数据库实例仅由画像引擎使用，画像引擎向上层的业务模块提供实体标签的查询和记录。 由于上层不同模块同时对同一个实体进行写操作，导致画像引擎部分发生 同  UNIQUE KEY的并发INSERT 操作</p>
+<h4 id="出现的是什么锁？"><a href="#出现的是什么锁？" class="headerlink" title="出现的是什么锁？"></a>出现的是什么锁？</h4><p>死锁快照的最后一部分有这样一段描述</p>
+<blockquote>
+<p>trx id 101037787572 lock_mode X locks gap before rec insert intention waiting<br>引用1 中有对该错误出现原因的详细分析，文档中有对该错误的定义Insert Intention Locks<br>An insert intention lock is a type of gap lock set by INSERT operations prior to row insertion</p>
+</blockquote>
+<p>可以看到Insert Intention Locks属于Gap锁的一种，但是MySQL官方文档中对gap-locks定义innodb-gap-locks中有说明RC级别可以禁用Gap锁，那为什么还会出现这个问题呢。</p>
+<blockquote>
+<p>Gap locking can be disabled explicitly. This occurs if you change the transaction isolation level to READ COMMITTED. Under these circumstances, gap locking is disabled for searches and index scans and is used only for foreign-key constraint checking and duplicate-key checking.</p>
+</blockquote>
+<h3 id="为什么会现Gap锁"><a href="#为什么会现Gap锁" class="headerlink" title="为什么会现Gap锁"></a>为什么会现Gap锁</h3><blockquote>
+<p>lock_mode X locks gap before rec insert intention waiting</p>
+</blockquote>
+<p>假设一个存在如下这样一个数据前提（具体信息可以在引用1中查看），当我们执行事务1按照order_type=2条件更新，因此先使用索引idx_order_type定位到order_type=2的记录并加锁(ROW LOCK)，再根据二级索引上包含的主键索引值找到表上order_id=2和order_id=4的记录并加锁(ROW LOCK)，加锁如下：<br><img src="/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/idx_order_type.png"></p>
 <ul>
+<li>当我们同时执行事务2按照order_id=3条件更新，先根据主键定位到order_id=3并加锁(ROW LOCK)，然后根据主键中数据(order_type=1+ order_id=3)到索引idx_order_type上找到满足条件的记录并加锁，UPDATE操作将数据(1,3)更新为(2,3)，因此会将索引idx_order_type上记录(1,3)标记为删除，然后在记录(2,2)和(2,4)之间插入新记录(2,3),在插入记录前，为防止其他事务在该物理位置上插入其他数据，需要先在索引idx_order_type上申请记录(2,2)和(2,4)之间插入意向锁(Insert Intention Gap Lock),其加锁如下：<br><img src="/2021/04/16/read-committed%E4%B8%8BGAP%E9%94%81%E9%97%AE%E9%A2%98/idx_order_type_insert.png"></li>
+<li>而由于索引记录(2,4)上已被事务1加锁（X LOCK+ ROW LOCK）,因此导致加插入意向锁(Insert Intention Gap Lock)被阻塞，处于“lock_mode X locks gap before rec insert intention waiting”的等待状态。<h4 id="RR及以上隔离级别为什么会出现-加锁策略"><a href="#RR及以上隔离级别为什么会出现-加锁策略" class="headerlink" title="RR及以上隔离级别为什么会出现 - 加锁策略"></a>RR及以上隔离级别为什么会出现 - 加锁策略</h4>对于这个错误的具体定义是：在事务插入数据过程中，为防止其他事务向索引上该位置插入数据，会在插入之前先申请插入意向范围锁，而如果申请插入意向范围锁被阻塞，则事务处于gap before rec insert intention waiting的等待状态。这篇文章中很形象的介绍了MySQL中的各类锁：说说你是怎么解决MySQL死锁的<br>我们先看下 官方定义中insert 语句的加锁策略：<blockquote>
+<p>“INSERT sets an exclusive lock on the inserted row. This lock is an index-record lock, not a next-key lock (that is, there is no gap lock) and does not prevent other sessions from inserting into the gap before the inserted row.<br>Prior to inserting the row, a type of gap lock called an insert intention gap lock is set. This lock signals the intent to insert in such a way that multiple transactions inserting into the same index gap need not wait for each other if they are not inserting at the same position within the gap. ”</p>
+</blockquote>
+</li>
+</ul>
+<p>我们知道事务执行insert的时候会申请一把插入意向锁(Insert Intention Lock)。在多个会话并发写入不同数据记录至同一索引间隙的时候，并不需要等待其他事务完成，不会发生锁等待。<br>假设有一个索引记录包含键值4和7，不同的会话分别插入5和6，每个事务都会产生一个加在4-7之间的插入意向锁，获取在插入行上的排它锁，但是不会被互相锁住，因为数据行并不冲突。<br>当前情况为什么会出现 - 补充说明<br>但是如果遇到唯一键呢？<br>( Under these circumstances指的就是 transaction isolation level READ COMMITTED) </p>
+<blockquote>
+<p>Under these circumstances, gap locking is disabled for searches and index scans and is used only for foreign-key constraint checking and duplicate-key checking.<br>同时insert加锁策略中也有描述<br>If a duplicate-key error occurs, a shared lock on the duplicate index record is set. This use of a shared lock can result in deadlock should there be multiple sessions trying to insert the same row if another session already has an exclusive lock.<br>对于insert操作来说，若发生唯一约束冲突，则需要对冲突的唯一索引加上S Next-key Lock。从这里会发现，即使是RC事务隔离级别，也同样会存在Next-Key Lock锁，从而阻塞并发。然而，文档没有说明的是，对于检测到冲突的唯一索引，等待线程在获得S Lock之后，还需要对下一个记录进行加锁，在源码中由函数row_ins_scan_sec_index_for_duplicate进行判断。<br>普通索引和唯一索引的区别<br>为什么在RC级别下Gap会与唯一索引有关呢？ 唯一索引有普通索引有什么区别？ 能否通过将唯一索引替换为普通索引来解决此问题？<br>// TODO </p>
+</blockquote>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>虽然Gap锁只作用在隔离级别为RR及以上的数据库上， 但是不意味着隔离级别为RC 级别的不会使用。 RC级别在进行外键约束检测和唯一键约束检测的时候，会使用到Gap锁， 而正是这个 duplicate-key checking 导致了上文出现的死锁发生。</p>
+<h3 id="优化方法"><a href="#优化方法" class="headerlink" title="优化方法"></a>优化方法</h3><p>拆分执行语句 - 减小合并记录数量<br>拆分执行语句 - update + insert<br>同类问题和相关文档<br>这里记录一下排查问题过程中浏览到的一些文档，其实官方文档永远是做好的参考手册，笔记中的引用也尽量去找对应的官方说明了，但是在没有找到用好官方文档的技巧之前，大佬翻译和图解过的内容看起来会简单一些。</p>
+<h3 id="同类问题及相关文档"><a href="#同类问题及相关文档" class="headerlink" title="同类问题及相关文档"></a>同类问题及相关文档</h3><ol>
+<li><a href="https://www.cnblogs.com/gaogao67/p/11042853.html">MySQL Lock–gap before rec insert intention waiting</a></li>
+<li><a href="https://www.cnblogs.com/crazylqy/p/7689447.html">初步理解MySQL的gap锁</a></li>
+<li><a href="https://www.cnblogs.com/LBSer/p/5183300.html">mysql死锁问题分析</a></li>
 <li><a href="https://www.cnblogs.com/zhjh256/p/6051839.html">mysql 5.6 read-committed隔离级别下并发插入唯一索引导致死锁一例（GAP锁的问题）</a></li>
 <li><a href="http://www.kokojia.com/article/42839.html">数据库：MySQL 普通索引和唯一索引的区别</a></li>
-</ul>
+</ol>
 ]]></content>
       <categories>
         <category>MySQL</category>
@@ -212,11 +254,17 @@
     <title>C++异常分类与处理</title>
     <url>/2025/04/17/C-%E5%BC%82%E5%B8%B8%E5%88%86%E7%B1%BB%E4%B8%8E%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
   </entry>
   <entry>
     <title>ThriftRPC框架-请求优先级实现原理</title>
     <url>/2025/04/17/ThriftRPC%E6%A1%86%E6%9E%B6-%E8%AF%B7%E6%B1%82%E4%BC%98%E5%85%88%E7%BA%A7%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[]]></content>
+      <categories>
+        <category>架构设计</category>
+      </categories>
   </entry>
   <entry>
     <title>推荐架构的工程拆解</title>
@@ -230,5 +278,62 @@
     <title>重叠实验架构基础设施</title>
     <url>/2025/04/17/%E9%87%8D%E5%8F%A0%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/</url>
     <content><![CDATA[]]></content>
+      <categories>
+        <category>架构设计</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>从数美科技的风控架构出发，如何理解DDD思想</title>
+    <url>/2025/04/18/%E4%BB%8E%E6%95%B0%E7%BE%8E%E7%A7%91%E6%8A%80%E7%9A%84%E9%A3%8E%E6%8E%A7%E6%9E%B6%E6%9E%84%E5%87%BA%E5%8F%91%EF%BC%8C%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3DDD%E6%80%9D%E6%83%B3/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<blockquote>
+<p>第一次知道 DDD， 是在 2021 年迫切想提升自己架构设计能力时，看到了一篇 2017 年美团技术团队发布的文章:<a href="https://tech.meituan.com/2017/12/22/ddd-in-practice.html">领域驱动设计在互联网业务开发中的实践</a>，时光转瞬，四年后的今天我对 DDD 的理解还是懵懵懂懂…</p>
+</blockquote>
+<h2 id="现状以及面临的问题"><a href="#现状以及面临的问题" class="headerlink" title="现状以及面临的问题"></a>现状以及面临的问题</h2><p>业务：互联网业务风控、AIGC 内容风控<br>功能：支持文本、图片、视频文件、视频流、音频文件、音频流、行为事件等多种形式的内容风控、行为风控</p>
+<h3 id="经典的三层架构"><a href="#经典的三层架构" class="headerlink" title="经典的三层架构"></a>经典的三层架构</h3><p><img src="/2025/04/18/%E4%BB%8E%E6%95%B0%E7%BE%8E%E7%A7%91%E6%8A%80%E7%9A%84%E9%A3%8E%E6%8E%A7%E6%9E%B6%E6%9E%84%E5%87%BA%E5%8F%91%EF%BC%8C%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3DDD%E6%80%9D%E6%83%B3/classical_v1.png"><br>我们抽取两个模块，从实现功能角度来看一下存在哪些问题</p>
+<table>
+  <tr>
+    <th>模块</th>
+    <th>职责</th>
+  </tr>
+  <tr>
+<td>图像处理模块（pi-image）</td>
+<td>图片审核请求参数的校验<br>业务数据记录<br>图片获取<br>图像的截帧<br><span style="color: red;">截帧图像处理<br>基础设施层调用及结果整合</span></td>
+</tr>
+ <tr>
+<td>视频文件处理模块（pi-vidoe）</td>
+<td>视频文件审核参数的校验<br>业务数据记录<br>文件获取<br>视频截帧抽取<br>视频音频片段切分<br><span style="color: red;">截帧图像的处理<br>基础设施层调用及结果整合</span>
+</td>
+  </tr>
+</table>
+我们会发现，两个模块除了各自的媒体形式逻辑以外，都在做相同的截帧图像的处理、基础设施层调用及结果整合功能。并且这两个具体功能中包含大量的业务逻辑且会经常性的迭代变更。
+
+<h3 id="怎么从质量和效率的角度论证呢"><a href="#怎么从质量和效率的角度论证呢" class="headerlink" title="怎么从质量和效率的角度论证呢"></a>怎么从质量和效率的角度论证呢</h3><h2 id="如何改进？"><a href="#如何改进？" class="headerlink" title="如何改进？"></a>如何改进？</h2><blockquote>
+<p>为什么不抽象独立的视觉对象？</p>
+<blockquote>
+<p>该对象负责图片业务截帧、视频文件业务截帧、视频流业务截帧、网页业务截帧等所有视觉对象的审核功能。</p>
+</blockquote>
+</blockquote>
+<h3 id="独立视觉对象的架构"><a href="#独立视觉对象的架构" class="headerlink" title="独立视觉对象的架构"></a>独立视觉对象的架构</h3><p>先说第一版尝试优化的结果：我们将多种互联网媒体形式下的三种基础内容进行抽象。每种基础内容对象的所有功能放到子域内，向上层提供简单的对象审核 API。</p>
+<ul>
+<li>视觉对象：视觉截帧（可以是图片、视频、网页等多种来源）</li>
+<li>语义对象：文本片段（可以是文本、OCR、ASR 等多种来源）</li>
+<li>语音对象：音频片段（可以是音频、视频音频等多种来源）<br><img src="/2025/04/18/%E4%BB%8E%E6%95%B0%E7%BE%8E%E7%A7%91%E6%8A%80%E7%9A%84%E9%A3%8E%E6%8E%A7%E6%9E%B6%E6%9E%84%E5%87%BA%E5%8F%91%EF%BC%8C%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3DDD%E6%80%9D%E6%83%B3/DDD_v2.png"><br>修改后从架构设计角度来看有哪些改变：</li>
+<li>修改独立性：各对象独立修改、发布，可按照业务单元进行拆分</li>
+<li>一处一事实：避免多处实现修改不一致等质量效率问题</li>
+<li>概念多样性：支持领域对象独立扩展，支持语音对象、行为事件对象等</li>
+</ul>
+<h3 id="改进后与-DDD-的思想还有哪些差异？"><a href="#改进后与-DDD-的思想还有哪些差异？" class="headerlink" title="改进后与 DDD 的思想还有哪些差异？"></a>改进后与 DDD 的思想还有哪些差异？</h3>]]></content>
+      <categories>
+        <category>架构设计</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>arc42模版的实践思考</title>
+    <url>/2025/04/18/arc42%E6%A8%A1%E7%89%88%E7%9A%84%E5%AE%9E%E8%B7%B5%E6%80%9D%E8%80%83/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>架构设计</category>
+      </categories>
   </entry>
 </search>
