@@ -253,7 +253,101 @@
   <entry>
     <title>C++异常分类与处理</title>
     <url>/2025/04/17/C-%E5%BC%82%E5%B8%B8%E5%88%86%E7%B1%BB%E4%B8%8E%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<p>[TOC]</p>
+<h2 id="异常检测-amp-异常处理的介绍"><a href="#异常检测-amp-异常处理的介绍" class="headerlink" title="异常检测&amp;异常处理的介绍"></a>异常检测&amp;异常处理的介绍</h2><p><span style="color: red;">异常提供了一种转移程序控制权的方式</span><br>异常是指在程序运行时发生的反常行为，这些行为超出了函数正常功能的范围。<br>典型的异常包括失去数据库连接以及遇到意外输入等，当程序的某部分检测到一个它无法处理的问题时，需要用到异常处理。<br>此时，检测出问题的部分应该发出某种信号以表明程序遇到了故障，无法继续下去了，而且信号的发出方无须知道故障将在何处得到解决。<br>一旦发出异常信号，检测出问题的部分也就完成了任务。</p>
+<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><p>异常处理机制为程序中“异常检测”和“异常处理”这两部分的协作提供支持<br>C++异常处理涉及到三个关键字：try、catch、throw，在C++语言中，异常处理包括：</p>
+<ul>
+<li>throw表达式(throw expression)：<ul>
+<li>异常检测部分使用throw表达式来表示它遇到了无法处理的问题。throw引发(raise)异常。</li>
+<li>throw表达式包含关键字throw和紧随其后的一个表达式，其中表达式的类型就是抛出的异常类型。</li>
+<li>throw表达式后面通常紧跟一个分号，从而构成一条表达式语句。</li>
+<li><span style="color: red;">抛出异常将终止当前的函数，并把控制权转移给能处理该异常的代码</span></li>
+</ul>
+</li>
+<li>try语句块(try block)：<ul>
+<li>异常处理部分使用try语句块处理异常</li>
+<li>try语句块以关键字try开始，并以一个或多个catch子句(catch clause)结束</li>
+<li>try语句块中代码抛出的异常通常会被某个catch子句处理</li>
+<li>因为catch子句处理异常，所以它们也被称作异常处理代码(exception handler)，catch子句包括三部分：<ul>
+<li>关键字catch、括号内一个(可能未命名的)对象的声明(称作异常声明，exception declaration)以及一个块</li>
+<li>当选中了某个catch子句处理异常之后，执行与之对应的块</li>
+<li>catch一旦完成，程序跳转到try语句块最后一个catch子句之后的那条语句继续执行</li>
+</ul>
+</li>
+<li><span style="color: red;">一如往常，try语句块声明的变量在块外部无法访问，特别是在catch子句内也无法访问</span></li>
+<li><span style="color: red;">如果一段程序没有try语句块且发生了异常，系统会调用terminate函数并终止当前程序的执行</span></li>
+</ul>
+</li>
+<li>一套异常类(exception class)：用于在throw表达式和相关的catch子句之间传递异常的具体信息</li>
+</ul>
+<h4 id="函数在寻找处理代码的过程中退出"><a href="#函数在寻找处理代码的过程中退出" class="headerlink" title="函数在寻找处理代码的过程中退出"></a>函数在寻找处理代码的过程中退出</h4><p>寻找处理代码的过程与函数调用链刚好相反。<br>当异常被抛出时，首先搜索抛出该异常的函数。如果没有找到匹配的catch子句，终止该函数，并在调用该函数的函数中继续寻找。<br>如果还是没有找到匹配的catch子句，这个新的函数也被终止，继续搜索调用它的函数。以此类推，沿着程序的执行路径逐层回退，直到找到适当类型的catch子句为止。<br><img src="/2025/04/17/C-%E5%BC%82%E5%B8%B8%E5%88%86%E7%B1%BB%E4%B8%8E%E5%A4%84%E7%90%86/throw.png"></p>
+<p>如果最终还是没能找到任何匹配的catch子句，程序转到名为terminate的标准库函数。该函数的行为与系统有关，一般情况下，执行该函数将导致程序非正常退出。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;exception&gt;</span></span></span><br><span class="line"><span class="comment">/** The runtime will call this function if %exception handling must be</span></span><br><span class="line"><span class="comment"> *  abandoned for any reason.  It can also be called by the user.  */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">terminate</span><span class="params">()</span> _GLIBCXX_USE_NOEXCEPT __<span class="title">attribute__</span> <span class="params">((__noreturn__))</span></span>;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>terminate函数<br>C++中，异常不可以忽略，当异常找不到匹配的catch字句时，会调用系统的库函数terminate()（在头文件中），默认情况下，terminate（）函数调用标准C库函数abort（）使程序终止而退出。当调用abort函数时，程序不会调用正常的终止函数，也就是说，全局对象和静态对象的析构函数不会执行。</p>
+</li>
+<li><p>set_terminate()函数<br>通过使用标准的set_terminate()函数，可以设置自己的terminate（)函数。自定义的terminate()函数不能有参数，而且返回值类型为void。另外，terminate函数不能返回也不能抛出异常，它必须终止程序。如果terminate函数被调用，这就意味着问题已经无法解决了。</p>
+</li>
+</ol>
+<p>那些在异常发生期间正确执行了”清理”工作的程序被称作异常安全(exception safe)的代码。编写异常安全的代码非常困难。<br><span style="color:red;">任何执行try 或者catch中的return语句之后，在返回之前，如果finally存在的话，都会先执行finally语句，如果finally中有return语句，那么程序就return了，所以finally中的return是一定会被return的，编译器把finally中的return实现为一个warning。</span></p>
+<h2 id="异常的分类和定义"><a href="#异常的分类和定义" class="headerlink" title="异常的分类和定义"></a>异常的分类和定义</h2><h3 id="异常的基类与子类"><a href="#异常的基类与子类" class="headerlink" title="异常的基类与子类"></a>异常的基类与子类</h3><p><img src="/2025/04/17/C-%E5%BC%82%E5%B8%B8%E5%88%86%E7%B1%BB%E4%B8%8E%E5%A4%84%E7%90%86/exception_base.png"><br>std::exception是标准c++里所有的异常类的基类，你可以通过继承这个类来实现你自己的异常类<br>可以看到标准c++提供了很多异常类，用于捕获使用标准c++类发生的错误，同时每个类里重写了std::exception虚函数what，用于打印发生的错误信息</p>
+<h4 id="异常类对应的使用场景"><a href="#异常类对应的使用场景" class="headerlink" title="异常类对应的使用场景"></a>异常类对应的使用场景</h4><p>下面是继承基类提供的错误类描述</p>
+<ul>
+<li>std::bad_alloc<br>  当程序调用new分配内存时，内存不够时会抛出此异常</li>
+<li>std::bad_cast<br>  类型转换失败时抛出的异常，由dynamic_cast(将基类指针转为继承类指针类型)抛出</li>
+<li>std::bad_typeid<br>  当获取类型失败时会抛出此异常</li>
+<li>std::bad_exception<br>  一些未知的异常，可以通过此类抛出来</li>
+<li>std::logic_error<br>  逻辑错误类，可以通过继承此类来抛出一些逻辑的错误，用于自定义逻辑错误，当然也可以不继承它，这只是c++提供的标准，以下是c++继承std::logic_error实现的几个异常类<ul>
+<li>std::domain_error<br>  自定义异常类型,用户可以通过抛出此异常来描述自己的自定义异常，抛出的类型只能是const char*,主要用于标识告诉调用者在主或核心函数里发生了异常，这是c++帮我们定义的异常类型</li>
+<li>std::invalid_argument<br>  无效参数类型，如果检测到无效参数，可以通过此异常抛出去</li>
+<li>std::length_error<br>  当长度超出规定值时可以通过此异常抛出</li>
+<li>std::out_of_range<br>  发生越界时可以通过此异常类型抛出</li>
+</ul>
+</li>
+<li>std:runtime_error<br>  运行时的异常类型，当运行时发生了异常，可以通过继承此类来抛出异常，以下是c++继承此类实现的几个标准类<ul>
+<li>std::overflow_error<br>  当运行时进行数学计算时，输入的数据太长，超出了缓冲区，并填充到缓冲区上一级的内存空间里去时会抛出此异常</li>
+<li>std::underflow_error<br>  当运行时进行数学计算时，输入的数据太长，超出了缓冲区，并填充到缓冲区下一级的内存空间里去时会抛出此异常</li>
+<li>std::range_error<br>  计算时所产生的结果不符合预期值，或预期范围值时会抛出此异常</li>
+</ul>
+</li>
+</ul>
+<p>《C++Primer(Fifth Edition)》<br>异常类所在的头文件<br>它们分别定义在4个头文件中：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;exception&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了最通常的异常类std::exception，它只报告异常的发生，不提供任何额外的信息</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdexcept&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了几种常用的异常类</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;new&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了bad_alloc异常类型</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;typeinfo&gt;</span></span></span><br><span class="line"><span class="comment">// 定义了bad_cast异常类型</span></span><br></pre></td></tr></table></figure>
+<p>以上这些标准被很多数学库和其它的一些类库所采用，我们调用时可以根据函数行为来捕获对应的异常。<br>一个合格的c++程序员，理应在对应的场景下使用这些异常类，以符合通用标准。</p>
+<h2 id="如何使用异常类"><a href="#如何使用异常类" class="headerlink" title="如何使用异常类"></a>如何使用异常类</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">division</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="built_in">std</span>::invalid_argument(<span class="string">&quot;Division by zero condition&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> (a / b);</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        z = division(x, y);</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; z &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (<span class="built_in">std</span>::exception &amp;e) &#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cerr</span> &lt;&lt; e.what() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h3 id="规范中怎么要求异常处理"><a href="#规范中怎么要求异常处理" class="headerlink" title="规范中怎么要求异常处理"></a>规范中怎么要求异常处理</h3><p>异常通常发生在非预期的执行情况下，此时为了保证请求/模块的“可监控”标准，需要在使用异常捕获时遵守如下规范：<br><a href="https://google.github.io/styleguide/cppguide.html#Exceptions">Google C++ Style Guide#异常</a></p>
+<h2 id="重写自己的异常类"><a href="#重写自己的异常类" class="headerlink" title="重写自己的异常类"></a>重写自己的异常类</h2><h3 id="何时重写自己的异常类"><a href="#何时重写自己的异常类" class="headerlink" title="何时重写自己的异常类"></a>何时重写自己的异常类</h3><ol>
+<li>发生非预期内容/需要转移程序控制权</li>
+<li>需要区分异常类型进行区别处理<br>应该怎么做<ol>
+<li>见不应该怎么做<br>不应该怎么做</li>
+</ol>
+</li>
+<li>避免使用std::exception捕获所有异常，然后通过what内容进行异常分类<ol>
+<li>避免使用std::exception捕获所有异常，不区分处理逻辑<br><img src="/2025/04/17/C-%E5%BC%82%E5%B8%B8%E5%88%86%E7%B1%BB%E4%B8%8E%E5%A4%84%E7%90%86/catch_next.png"></li>
+</ol>
+</li>
+</ol>
+<h3 id="如何重写自己的异常类"><a href="#如何重写自己的异常类" class="headerlink" title="如何重写自己的异常类"></a>如何重写自己的异常类</h3><p><strong>std::exception：标准异常类的基类，其类的声明在头文件<exception>中。所有标准库的异常类均继承于此类，因此通过引用类型可以捕获所有标准异常。</exception></strong><br>std::exception类定义了无参构造函数、拷贝构造函数、拷贝赋值运算符、一个虚析构函数和一个名为what的无参虚成员。<br>其中what函数返回一个const char*，该指针指向一个以null结尾的字符数组，并且确保不会抛出任何异常，该字符串的目的是提供关于异常的一些文本信息。<br><strong>除析构函数外，其它函数均通过关键字noexcept说明此函数不会抛出异常。</strong></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">  <span class="class"><span class="keyword">class</span> <span class="title">exception</span></span></span><br><span class="line"><span class="class">  &#123;</span></span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    exception() _GLIBCXX_NOTHROW &#123; &#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~exception() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> __cplusplus &gt;= 201103L</span></span><br><span class="line">    exception(<span class="keyword">const</span> exception&amp;) = <span class="keyword">default</span>;</span><br><span class="line">    exception&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> exception&amp;) = <span class="keyword">default</span>;</span><br><span class="line">    exception(exception&amp;&amp;) = <span class="keyword">default</span>;</span><br><span class="line">    exception&amp; <span class="keyword">operator</span>=(exception&amp;&amp;) = <span class="keyword">default</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Returns a C-style character string describing the general cause</span></span><br><span class="line"><span class="comment">     *  of the current error.  */</span></span><br><span class="line">    <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span>*</span><br><span class="line">    what() <span class="keyword">const</span> _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;</span><br><span class="line">  &#125;;</span><br><span class="line">...</span><br><span class="line"><span class="meta">#  <span class="meta-keyword">define</span> _GLIBCXX_USE_NOEXCEPT noexcept</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> _GLIBCXX_NOTHROW</span></span><br><span class="line"><span class="meta"># <span class="meta-keyword">define</span> _GLIBCXX_NOTHROW _GLIBCXX_USE_NOEXCEPT</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>std::exception is the class whose only purpose is to serve as the base class in the exception hierarchy. It has no other uses. In other words, conceptually it is an abstract class (even though it is not defined as abstract class in C++ meaning of the term).<br>以下内容摘自：《C++Primer(Fifth Edition)》</p>
+<h3 id="重写并捕获自定义异常"><a href="#重写并捕获自定义异常" class="headerlink" title="重写并捕获自定义异常"></a>重写并捕获自定义异常</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">myexception</span> :</span> <span class="keyword">public</span> <span class="built_in">std</span>::exception</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">what</span><span class="params">()</span> <span class="keyword">const</span> <span class="title">throw</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;My exception happened&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; myex;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">test_exception2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> myex;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (<span class="built_in">std</span>::exception&amp; e) &#123; <span class="comment">// catches exception objects by reference (notice the ampersand &amp; after the type)</span></span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; e.what() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="异常捕获的其他讨论"><a href="#异常捕获的其他讨论" class="headerlink" title="异常捕获的其他讨论"></a>异常捕获的其他讨论</h2><p>try catch能捕获哪些异常<br>    见不能捕获哪些异常<br>不能捕获的异常有什么<br>先做假定：<span style="color:red;">try catch仅能用于捕获程序主动throw的异常（包括std::exception类及其子类、包括int、char等类型）</span></p>
+<p>无法捕获以下常见的非主动throw内容</p>
+<ul>
+<li>常见的空指针、计算溢出、异常转化、零值计算等等</li>
+<li>常见的程序退出信号<br>对于一些程序abort信号，虽然有方式进行捕获，但是不可以在运行程序中执行退出信号的捕获操作。<br>当退出信号发出后，一般表示程序已进入最后阶段，再执行抢救，可能会发生其他非预期问题。<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">test_exception_not_catch_1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">int</span>* index = <span class="literal">nullptr</span>;</span><br><span class="line">        <span class="keyword">int</span> value = <span class="number">100</span>/(*index);</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; value &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="built_in">std</span>::exception &amp;e) &#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;Exception: &quot;</span> &lt;&lt; e.what() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 尝试捕获并做最终执行的异常</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">register_signal_handle</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::signal(SIGSEGV, [](<span class="keyword">int</span> signal) &#123;</span><br><span class="line">       <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;got a SIGSEGV signal, start exit&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    register_signal_handle();</span><br><span class="line">    test_exception_not_catch_1();</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;process final&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
+<li><a href="https://cplusplus.com/doc/tutorial/exceptions/">https://cplusplus.com/doc/tutorial/exceptions/</a></li>
+<li><a href="https://blog.csdn.net/bjbz_cxy/article/details/110231205">https://blog.csdn.net/bjbz_cxy/article/details/110231205</a></li>
+<li><a href="https://blog.csdn.net/fengbingchun/article/details/78303734/">https://blog.csdn.net/fengbingchun/article/details/78303734/</a></li>
+<li><a href="https://blog.csdn.net/fengbingchun/article/details/65939258">https://blog.csdn.net/fengbingchun/article/details/65939258</a></li>
+<li><a href="https://blog.csdn.net/weixin_40332490/article/details/105265475">https://blog.csdn.net/weixin_40332490/article/details/105265475</a></li>
+</ul>
+]]></content>
       <categories>
         <category>C++</category>
       </categories>
