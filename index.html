@@ -225,14 +225,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -273,6 +273,376 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/04/20/%E6%95%88%E6%9E%9C%E5%AE%9E%E9%AA%8C%E5%B9%B3%E5%8F%B0%E4%B8%AD%E5%90%84%E7%B1%BB%E6%8C%87%E6%A0%87%E7%9A%84%E7%90%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Saifei Song">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MoonlitAlley">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/04/20/%E6%95%88%E6%9E%9C%E5%AE%9E%E9%AA%8C%E5%B9%B3%E5%8F%B0%E4%B8%AD%E5%90%84%E7%B1%BB%E6%8C%87%E6%A0%87%E7%9A%84%E7%90%86%E8%A7%A3/" class="post-title-link" itemprop="url">效果实验平台中各类指标的理解</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2025-04-20 16:46:45 / Modified: 18:49:59" itemprop="dateCreated datePublished" datetime="2025-04-20T16:46:45+08:00">2025-04-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%84%E6%B5%8B/" itemprop="url" rel="index"><span itemprop="name">评测</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2025/04/20/%E6%95%88%E6%9E%9C%E5%AE%9E%E9%AA%8C%E5%B9%B3%E5%8F%B0%E4%B8%AD%E5%90%84%E7%B1%BB%E6%8C%87%E6%A0%87%E7%9A%84%E7%90%86%E8%A7%A3/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2025/04/20/%E6%95%88%E6%9E%9C%E5%AE%9E%E9%AA%8C%E5%B9%B3%E5%8F%B0%E4%B8%AD%E5%90%84%E7%B1%BB%E6%8C%87%E6%A0%87%E7%9A%84%E7%90%86%E8%A7%A3/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>[TOC]</p>
+<h2 id="先看适用场景"><a href="#先看适用场景" class="headerlink" title="先看适用场景"></a>先看适用场景</h2><h3 id="关键对比与选择建议"><a href="#关键对比与选择建议" class="headerlink" title="关键对比与选择建议"></a>关键对比与选择建议</h3><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>核心关注点</th>
+<th>典型场景</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>准确率</td>
+<td>整体预测正确性</td>
+<td>类别均衡的初步评估</td>
+<td>对不平衡数据不敏感</td>
+</tr>
+<tr>
+<td>精准率</td>
+<td>预测正类的可靠性</td>
+<td>误报成本高（如法律判决）</td>
+<td>可能漏掉大量实际正类</td>
+</tr>
+<tr>
+<td>召回率</td>
+<td>捕捉实际正类的能力</td>
+<td>漏报成本高（如疾病筛查）</td>
+<td>可能引入大量误报</td>
+</tr>
+</tbody></table>
+<p><strong>权衡建议</strong></p>
+<ul>
+<li>精准率 vs 召回率：根据业务需求选择。例如，推荐系统可能优先精准率（推荐内容必须相关），而癌症筛查优先召回率（不能漏诊）。</li>
+<li>综合指标：使用F1分数（精准率和召回率的调和平均）或PR曲线平衡两者。</li>
+</ul>
+<p><strong>进阶技巧</strong></p>
+<ul>
+<li>类别不平衡时，优先选择精准率、召回率或AUC-ROC；</li>
+<li>多分类问题中，可采用宏平均（Macro）或加权平均（Weighted）扩展这些指标。</li>
+</ul>
+<h2 id="再看指标定义"><a href="#再看指标定义" class="headerlink" title="再看指标定义"></a>再看指标定义</h2><p>在介绍指标前必须先了解“混淆矩阵”：</p>
+<h3 id="混淆矩阵"><a href="#混淆矩阵" class="headerlink" title="混淆矩阵"></a>混淆矩阵</h3><ul>
+<li>True Positive(真正，TP)：将正类预测为正类数</li>
+<li>True Negative(真负，TN)：将负类预测为负类数</li>
+<li>False Positive(假正，FP)：将负类预测为正类数误报 (Type I error)</li>
+<li>False Negative(假负，FN)：将正类预测为负类数→漏报 (Type II error)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Positive</th>
+<th>Negative</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>True</td>
+<td>True Positive(TP)</td>
+<td>True Negative(TN)</td>
+</tr>
+<tr>
+<td>False</td>
+<td>False Positive(FP)</td>
+<td>False Negative(FN)</td>
+</tr>
+</tbody></table>
+<table>
+<tr><th rowspan="5">实<br>际<br>类<br>别</th><th colspan="4" style="text-align:center">预测类别</th></tr>
+<tr><td></td><td>Yes</td><td>No</td><td>总计</td></tr>
+<tr><td>Yes</td><td>TP</td><td>FN</td><td>P(实际为 Yes)</td></tr>
+<tr><td>No</td><td>FP</td><td>TN</td><td>N(实际为 No)</td></tr>
+<tr><td>总计</td><td>P'（被分为 Yes）</td><td>N'（被分为 No）</td><td>P+N</td></tr>
+ </table>
+
+<h3 id="准确率（accuracy）"><a href="#准确率（accuracy）" class="headerlink" title="准确率（accuracy）"></a>准确率（accuracy）</h3><p>准确率（accuracy）计算公式为：</p>
+<blockquote>
+<p>ACC = （TP + TN）/ (TP + FP + TN + FN)</p>
+<blockquote>
+<p>简单来说，准确率 = 正确分类的样本数 / 样本总数</p>
+</blockquote>
+</blockquote>
+<h4 id="为什么需要准确率："><a href="#为什么需要准确率：" class="headerlink" title="为什么需要准确率："></a>为什么需要准确率：</h4><p><strong>作用</strong>：衡量模型整体预测正确性，适用于类别均衡的场景。<br><strong>优点</strong>：</p>
+<ul>
+<li>直观易懂：直接反映模型整体正确率；</li>
+<li>计算简单：适合快速评估模型性能。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>对类别不平衡敏感：当某一类样本占绝对多数时（如99%负样本），模型即使将所有样本预测为多数类，准确率也会虚高；</li>
+<li>掩盖细节问题：无法区分模型在正负类上的具体表现差异。</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>类别分布均衡（如男女分类）；</li>
+<li>初步快速评估模型</li>
+</ul>
+<h3 id="精准率-Precision"><a href="#精准率-Precision" class="headerlink" title="精准率(Precision)"></a>精准率(Precision)</h3><blockquote>
+<p>P = TP / (TP + FP)</p>
+<blockquote>
+<p>简单来说，精准率 = 正确分类的正例样本数 / 分类为正例的样本数</p>
+</blockquote>
+</blockquote>
+<h4 id="为什么需要精准率："><a href="#为什么需要精准率：" class="headerlink" title="为什么需要精准率："></a>为什么需要精准率：</h4><p><strong>作用</strong>：衡量模型预测为正类的样本中实际为正类的比例，关注减少误报（False Positive）。<br><strong>优点</strong>：</p>
+<ul>
+<li>强调预测可靠性：适合对误报容忍度低的场景（如垃圾邮件分类）；</li>
+<li>对负样本数量不敏感。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>忽略漏报问题：不关心实际正类中有多少被漏判（FN）；</li>
+<li>可能牺牲召回率以提高精准率。</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>误报成本高的任务（如法律判决、金融风控）；</li>
+<li>需要确保“预测为正类的样本尽可能正确”的场景。</li>
+</ul>
+<h3 id="召回率（recall）"><a href="#召回率（recall）" class="headerlink" title="召回率（recall）"></a>召回率（recall）</h3><blockquote>
+<p>recall=TP/(TP+FN)=TP/P=sensitive</p>
+<blockquote>
+<p>召回率是覆盖面的度量，度量有多个正例被分为正例，recall=TP/(TP+FN)=TP/P=sensitive，可以看到召回率与灵敏度是一样的。</p>
+</blockquote>
+</blockquote>
+<h4 id="为什么需要召回率"><a href="#为什么需要召回率" class="headerlink" title="为什么需要召回率"></a>为什么需要召回率</h4><p><strong>作用</strong>：衡量实际为正类的样本中被正确预测的比例，关注减少漏报（False Negative）。<br><strong>优点</strong>：</p>
+<ul>
+<li>强调覆盖能力：适合必须尽可能捕捉所有正类的场景（如疾病诊断）；</li>
+<li>对正样本数量不敏感。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>可能增加误报：为提高召回率可能将更多样本预测为正类；</li>
+<li>可能牺牲精准率以提高召回率。</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>漏报成本高的任务（如癌症筛查、安全监控）；</li>
+<li>需要“尽可能找出所有正类样本”的场景。</li>
+</ul>
+<p>果然， 这些学术性的、结论性的东西之后看完仍然是一头雾水。想要区分这些指标，还需要深刻理解他们分别是为了解决什么问题的，所谓<strong>知其然，知其所以然</strong></p>
+<h3 id="这三类基础指标，怎么结合其他符合指标一起使用？"><a href="#这三类基础指标，怎么结合其他符合指标一起使用？" class="headerlink" title="这三类基础指标，怎么结合其他符合指标一起使用？"></a>这三类基础指标，怎么结合其他符合指标一起使用？</h3>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Saifei Song">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MoonlitAlley">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" class="post-title-link" itemprop="url">怎么理解DDD领域驱动设计</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2025-04-20 12:00:57 / Modified: 13:56:18" itemprop="dateCreated datePublished" datetime="2025-04-20T12:00:57+08:00">2025-04-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%B3%95%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">架构设计方法论</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>2004 年埃里克·埃文斯（Eric Evans）发表了《领域驱动设计》（Domain-Driven Design–Tackling Complexity in the Heart of Software）这本书，从此领域驱动设计（Domain Driven Design，简称 DDD）诞生。</p>
+<blockquote>
+<p><span style="color:red;">DDD 核心思想是通过领域驱动设计方法定义领域模型，从而确定业务和应用边界，保证业务模型与代码模型的一致性。</span></p>
+</blockquote>
+<p><strong>DDD是一种设计思想，通过事件风暴使用通用语言对业务进行领域建模，通过限界上下文进行合理的领域拆分，可以使得领域模型转向微服务的设计和落地，从而解决复杂软件难以理解，难以演进，也可以解决微服务业务界限难以界定的问题。</strong></p>
+<h2 id="什么是领域驱动设计？"><a href="#什么是领域驱动设计？" class="headerlink" title="什么是领域驱动设计？"></a>什么是领域驱动设计？</h2><p>领域 -&gt; 设计<br>什么是领域：<strong>百科：具体指一种特定的范围或区域</strong><br>业务问题域：比如金融领域、医疗领域、电商领域</p>
+<p>什么是驱动：（百科：用动力推动、带动、发动）<br>问题域驱动领域建模、领域模型驱动技术实现</p>
+<p>什么是设计：（百科：设计就是设想、运筹、计划、预算的一个过程）<br>领域模型的设计，用领域模型表达现实世界、解决实际问题。</p>
+<h2 id="有什么优缺点？"><a href="#有什么优缺点？" class="headerlink" title="有什么优缺点？"></a>有什么优缺点？</h2><h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p><span style="color:red;">将数据不⼀致的影响⾯进⼀步放⼤，由微服务级别放⼤到微服务内的聚合级别。</span></p>
+<ul>
+<li>什么是数据不一致：</li>
+<li>为什么会放大：</li>
+</ul>
+<h2 id="怎么使用-DDD"><a href="#怎么使用-DDD" class="headerlink" title="怎么使用 DDD"></a>怎么使用 DDD</h2><ol>
+<li>简历统一语言</li>
+<li>分解问题域</li>
+<li>链接业务和系统</li>
+</ol>
+<h3 id="怎么理解战略设计、战术设计？"><a href="#怎么理解战略设计、战术设计？" class="headerlink" title="怎么理解战略设计、战术设计？"></a>怎么理解战略设计、战术设计？</h3><p>战略设计：通用语言、领域/子域、限界上下文和架构风格等概念</p>
+<table>
+  <tr>
+    <th>动作</th>
+    <th>核心目标</th>
+    <th>关注点</th>
+    <th>关键概念</th>
+    <th>示例</th>
+  </tr>
+  <tr>
+<td>战略设计</td>
+<td>划分系统边界，明确业务领域的核心问题，并定义不同模块的交互关系</td>
+<td>宏观的领域划分、协作关系和语言统一</td>
+<td>
+1. **领域（Domain）**：业务问题空间，如电商、金融等。<br>
+2. **子域（SubDomain）**：将复杂领域分解为更小的部分，分为核心域（核心业务）、支撑域（辅助功能）、通用子域（通用解决方案，如支付）。<br>
+3. **限界上下文（Bounded Context）**：模型的边界，每个上下文内使用一致的术语和规则（例如，“订单”在销售和物流上下文中含义不同）<br>
+4. **上下文映射（Context Mapping）**：定义不同限界上下文之间的交互模式，如合作关系、客户-供应商、防腐层（Anti-Corruption Layer）等。<br>
+5. **统一语言（Ubiquitous Language）**：业务与技术团队共享的术语，确保沟通一致性。<br>
+</td>
+<td>在电商系统重，战略设计会划分出“订单处理”（核心域）、“库存管理”（支撑域 ）、“用户认证”（通用子域）等限界上下文，并通过上下文映射定义他们如何协作（如订单处理通过防腐层调用库存服务）</td>
+</tr>
+<tr>
+<td>战术设计</td>
+<td>实现限界上下文内的领域模型，通过具体模式表达业务逻辑。</td>
+<td>围观的代码结构和设计模式</td>
+<td>
+1. **实体（Entity）**：具有唯一标识和生命周期的对象（如 Order）。<br>
+2. **值对象（Value Object）**：无唯一标识、通过属性定义的对象（如 Money）。<br>
+3. **聚合（Aggregate）**：封装一组相关对象的根实体，保证业务一致性（如 Order 作为聚合根，包含 OrderItem）<br>
+4. **领域服务（Domain Service）**：处理跨聚合或无状态操作的逻辑（如订单计价服务）。<br>
+5. **仓储（Repository）**：提供聚合的持久化和查询接口 <br>
+6. **领域事件（Domain EventId）**：标识业务状态变化的事件（如 OrderPlaceEvent）。<br>
+7. **工厂（Factory）：封装复杂对象的创建逻辑<br>
+</td>
+<td>在“订单处理”上下文中，战术设计会定义 Order 实体、OrderItem 值对象、OrderRepository 仓储，并通过领域事件触发库存更新。</td>
+</tr>
+</table>
+
+
+
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/04/18/arc42%E6%A8%A1%E7%89%88%E7%9A%84%E5%AE%9E%E8%B7%B5%E6%80%9D%E8%80%83/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -300,10 +670,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2025-04-18 13:28:08 / Modified: 13:28:58" itemprop="dateCreated datePublished" datetime="2025-04-18T13:28:08+08:00">2025-04-18</time>
+      <time title="Created: 2025-04-18 13:28:08" itemprop="dateCreated datePublished" datetime="2025-04-18T13:28:08+08:00">2025-04-18</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2025-04-20 12:01:04" itemprop="dateModified" datetime="2025-04-20T12:01:04+08:00">2025-04-20</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -338,7 +714,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          
+          <p>依赖倒置原则<br>将模块间原来依赖于实现的部分， 修改未依赖接口</p>
+
       
     </div>
 
@@ -1213,236 +1590,6 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">vcpkg(master) » ./vcpkg search json</span><br><span class="line">arrow[json]                           JSON file support</span><br><span class="line">bitserializer        0.10             Core part of C++ 17 library <span class="keyword">for</span> serialization to JSON, XML, YAML</span><br><span class="line">bitserializer[cpprestjson-archive]    Module <span class="keyword">for</span> support JSON (implementation based on the CppRestSDK library)</span><br><span class="line">bitserializer[pugixml-archive]        Module <span class="keyword">for</span> support XML (implementation based on the PugiXml library)</span><br><span class="line">bitserializer[rapidjson-archive]      Module <span class="keyword">for</span> support JSON (implementation based on the RapidJson library)</span><br><span class="line">bitserializer[rapidyaml-archive]      Module <span class="keyword">for</span> support YAML (implementation based on the RapidYaml library)</span><br><span class="line">bitserializer-cpp... <span class="built_in">alias</span>            Deprecated <span class="built_in">alias</span> <span class="keyword">for</span> bitserializer-cpprestjson</span><br><span class="line">bitserializer-rap... <span class="built_in">alias</span>            Deprecated <span class="built_in">alias</span> <span class="keyword">for</span> bitserializer-rapidjson</span><br><span class="line">boost-json           1.75.0           Boost json module</span><br><span class="line">cereal               1.3.0            a header-only C++11 serialization library (built <span class="keyword">in</span> support <span class="keyword">for</span> binary, XML an...</span><br><span class="line">cjson                2019-11-30-1     Ultralightweight JSON parser <span class="keyword">in</span> ANSI C</span><br><span class="line">cjson[utils]                          Enable building the cJSON_Utils library</span><br><span class="line">cpprestsdk           2.10.17          C++11 JSON, REST, and OAuth library</span><br><span class="line">cpprestsdk[brotli]                    Brotli compression support</span><br><span class="line">cpprestsdk[compression]               HTTP Compression support</span><br><span class="line">cpprestsdk[default-features]          Features installed by default</span><br><span class="line">cpprestsdk[websockets]                Websockets support</span><br><span class="line">jansson              2.13.1           Jansson is a C library <span class="keyword">for</span> encoding, decoding and manipulating JSON data</span><br><span class="line">jsmn                 2019-04-27       A minimalistic JSON parser <span class="keyword">in</span> C.</span><br><span class="line">json-c               2019-09-10<span class="comment">#1     A JSON implementation in C</span></span><br><span class="line">json-dto             0.2.11           A small header-only library <span class="keyword">for</span> converting data between json representation an...</span><br><span class="line">json-schema-valid... 2.1.0            This is a C++ library <span class="keyword">for</span> validating JSON documents based on a JSON Schema. Th...</span><br><span class="line">json-spirit          4.1.0-1          json parser using boost library</span><br><span class="line">json11               2017-06-20-2     json11 is a tiny JSON library <span class="keyword">for</span> C++11, providing JSON parsing and serializat...</span><br><span class="line">json5-parser         1.0.0<span class="comment">#2          An enhancement of the JSON Spirit C++ library to understand json5.</span></span><br><span class="line">jsoncons             0.159.0          A C++, header-only library <span class="keyword">for</span> constructing JSON and JSON-like text and binary...</span><br><span class="line">jsoncpp              1.9.4            jsoncpp is an implementation of a JSON reader and writer <span class="keyword">in</span> C++. JSON (JavaScr...</span><br><span class="line">jsonnet              0.16.0<span class="comment">#1         Jsonnet - The data templating language</span></span><br><span class="line">jwt-cpp              0.4.0            A header only library <span class="keyword">for</span> creating and validating json web tokens <span class="keyword">in</span> c++</span><br><span class="line">minitrace            2019.02.06       Simple C/C++ library <span class="keyword">for</span> producing JSON traces suitable <span class="keyword">for</span> Chrome<span class="string">&#x27;s built-in ...</span></span><br><span class="line"><span class="string">msgpack              3.3.0            MessagePack is an efficient binary serialization format, which lets you exchan...</span></span><br><span class="line"><span class="string">msgpack11            0.0.10-1         msgpack11 is a tiny MsgPack library for C++11, providing MsgPack parsing and s...</span></span><br><span class="line"><span class="string">nlohmann-json        3.9.1            JSON for Modern C++</span></span><br><span class="line"><span class="string">parson               2020-09-14       a lighweight json library written in C</span></span><br><span class="line"><span class="string">picojson             1.3.0-1          A header-file-only, JSON parser serializer in C++.</span></span><br><span class="line"><span class="string">rapidjson            2020-09-14       A fast JSON parser/generator for C++ with both SAX/DOM style API &lt;http://rapid...</span></span><br><span class="line"><span class="string">sajson               2018-09-21       Lightweight, extremely high-performance JSON parser for C++11</span></span><br><span class="line"><span class="string">simdjson             0.7.1            A extremely fast JSON library that can parse gigabytes of JSON per second</span></span><br><span class="line"><span class="string">sqlcipher[json1]                      enable JSON functionality for sqlite3</span></span><br><span class="line"><span class="string">sqlite3[json1]                        enable JSON functionality for sqlite3</span></span><br><span class="line"><span class="string">taocpp-json          2020-09-14       C++ header-only JSON library</span></span><br><span class="line"><span class="string">valijson             2018-11-17-1     Header-only C++ library for JSON Schema validation</span></span><br><span class="line"><span class="string">yajl                 2.1.0-1          Yet Another JSON Library</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">If your library is not listed, please open an issue at and/or consider making a pull request:</span></span><br><span class="line"><span class="string">    https://github.com/Microsoft/vcpkg/issues</span></span><br><span class="line"><span class="string"></span></span><br></pre></td></tr></table></figure>
 <p>已安装</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vcpkg(master) » .&#x2F;vcpkg list</span><br><span class="line">sqlite3:x86-windows         3.32.1           SQLite is a software library that implements a se...</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Saifei Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/" class="post-title-link" itemprop="url">偏安一隅</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-01-31 18:05:41" itemprop="dateCreated datePublished" datetime="2021-01-31T18:05:41+08:00">2021-01-31</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2025-04-18 13:18:37" itemprop="dateModified" datetime="2025-04-18T13:18:37+08:00">2025-04-18</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%89%AA%E5%BD%B1/" itemprop="url" rel="index"><span itemprop="name">剪影</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>出发：朝阳区来广营去往箭扣长城路上<br>mey be 范崎路<img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/082.jpeg"><br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-3.jpg"><br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/082.jpeg"></p>
-<p>反正从我来到这个城市以后，没有再现过“苍穹之下”的天气了<br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-0.jpg"><br><img src="/2021/01/31/%E5%81%8F%E5%AE%89%E4%B8%80%E9%9A%85/QQ20210131-1.jpg"><br>写满了安静</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Saifei Song">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MoonlitAlley">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/" class="post-title-link" itemprop="url">Golang项目的常用库</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2021-01-31 16:53:27" itemprop="dateCreated datePublished" datetime="2021-01-31T16:53:27+08:00">2021-01-31</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2025-04-17 22:57:04" itemprop="dateModified" datetime="2025-04-17T22:57:04+08:00">2025-04-17</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Golang-module-%E6%94%B6%E9%9B%86/" itemprop="url" rel="index"><span itemprop="name">Golang module 收集</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine: </span>
-    
-    <a title="valine" href="/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/31/Golang%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%B8%B8%E7%94%A8%E5%BA%93/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h2 id="类型转化"><a href="#类型转化" class="headerlink" title="类型转化"></a>类型转化</h2><p><a target="_blank" rel="noopener" href="https://github.com/spf13/cast">spf13/cast</a></p>
-<h4 id="官方说明"><a href="#官方说明" class="headerlink" title="官方说明"></a>官方说明</h4><blockquote>
-<p>Easy and safe casting from one type to another in Go</p>
-<blockquote>
-<p>Cast is a library to convert between different go types in a consistent and easy way.</p>
-</blockquote>
-</blockquote>
-<h4 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h4><p>Example ‘ToString’:</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cast.ToString(<span class="string">&quot;mayonegg&quot;</span>)         <span class="comment">// &quot;mayonegg&quot;</span></span><br><span class="line">cast.ToString(<span class="number">8</span>)                  <span class="comment">// &quot;8&quot;</span></span><br><span class="line">cast.ToString(<span class="number">8.31</span>)               <span class="comment">// &quot;8.31&quot;</span></span><br><span class="line">cast.ToString([]<span class="keyword">byte</span>(<span class="string">&quot;one time&quot;</span>)) <span class="comment">// &quot;one time&quot;</span></span><br><span class="line">cast.ToString(<span class="literal">nil</span>)                <span class="comment">// &quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo <span class="keyword">interface</span>&#123;&#125; = <span class="string">&quot;one more time&quot;</span></span><br><span class="line">cast.ToString(foo)                <span class="comment">// &quot;one more time&quot;</span></span><br></pre></td></tr></table></figure>
-<p>当我们在项目（be-derive）中需要根据配置来决定返回值类型时，可以使用cast在最后阶段完成一个“统一的操作”</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *Derive)</span> <span class="title">formatCalcResult</span><span class="params">(val <span class="keyword">interface</span>&#123;&#125;, typeName <span class="keyword">string</span>)</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">switch</span> typeName &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="string">&quot;float&quot;</span>:</span><br><span class="line">		<span class="keyword">fallthrough</span></span><br><span class="line">	<span class="keyword">case</span> <span class="string">&quot;double&quot;</span>:</span><br><span class="line">		<span class="keyword">return</span> math.Trunc(cast.ToFloat64(val)*<span class="number">1e2</span>+<span class="number">0.5</span>) * <span class="number">1e-2</span></span><br><span class="line">	<span class="keyword">case</span> <span class="string">&quot;int&quot;</span>:</span><br><span class="line">		<span class="keyword">return</span> math.Trunc(cast.ToFloat64(val))</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="keyword">return</span> val</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="json处理"><a href="#json处理" class="headerlink" title="json处理"></a>json处理</h2><p><a target="_blank" rel="noopener" href="https://github.com/tidwall/gjson">tidwall/gjson</a><br><a target="_blank" rel="noopener" href="https://github.com/tidwall/sjson">tidwall/sjon</a></p>
-<h4 id="官方说明-1"><a href="#官方说明-1" class="headerlink" title="官方说明"></a>官方说明</h4><blockquote>
-<p> GJSON is a Go package that provides a fast and simple way to get values from a json document. It has features such as one line retrieval, dot notation paths, iteration, and parsing json lines.</p>
-</blockquote>
-<blockquote>
-<p> SJSON is a Go package that provides a very fast and simple way to set a value in a json document. The purpose for this library is to provide efficient json updating for the SummitDB project. For quickly retrieving json values check out GJSON.</p>
-</blockquote>
-<h4 id="使用示例-1"><a href="#使用示例-1" class="headerlink" title="使用示例"></a>使用示例</h4><p>To unmarshal to a map[string]interface{}:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">m, ok :&#x3D; gjson.Parse(json).Value().(map[string]interface&#123;&#125;)</span><br><span class="line">if !ok &#123;</span><br><span class="line">	&#x2F;&#x2F; not a map</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Get a json value</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if !gjson.Valid(json) &#123;</span><br><span class="line">	return errors.New(&quot;invalid json&quot;)</span><br><span class="line">&#125;</span><br><span class="line">value :&#x3D; gjson.Get(json, &quot;name.last&quot;)</span><br></pre></td></tr></table></figure>
-<p>Set vlaue to a empty string or json string</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">value, _ :&#x3D; sjson.Set(&quot;&quot;, &quot;name.last&quot;, &quot;Anderson&quot;)</span><br><span class="line">println(value)</span><br><span class="line">&#x2F;&#x2F; Output:</span><br><span class="line">&#x2F;&#x2F; &#123;&quot;name&quot;:&#123;&quot;last&quot;:&quot;Anderson&quot;&#125;&#125;</span><br><span class="line"></span><br><span class="line">value, _ :&#x3D; sjson.Set(&#96;&#123;&quot;name&quot;:&#123;&quot;last&quot;:&quot;Anderson&quot;&#125;&#125;&#96;, &quot;name.first&quot;, &quot;Sara&quot;)</span><br><span class="line">println(value)</span><br><span class="line">&#x2F;&#x2F; Output:</span><br><span class="line">&#x2F;&#x2F; &#123;&quot;name&quot;:&#123;&quot;first&quot;:&quot;Sara&quot;,&quot;last&quot;:&quot;Anderson&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>以下代码（arch-tool）的功能为：将kv为jsonpath类型的字符串，转化为标准的json格式<br>from <code>&#123;&quot;a.b.c&quot;:1, &quot;a.d&quot;:true&#125;</code> to <code>&#123;&quot;a&quot;:&#123;&quot;b&quot;:&#123;&quot;c&quot;:1&#125;, &quot;d&quot;:true&#125;&#125;</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">aeFeatures :&#x3D; make(map[string]interface&#123;&#125;)</span><br><span class="line">err :&#x3D; json.Unmarshal([]byte(gjson.Get(aeItemStr, &quot;features&quot;).Raw), &amp;aeFeatures)</span><br><span class="line">if err !&#x3D; nil &#123;</span><br><span class="line">	log.Println(fmt.Sprintf(&quot;json.Unmarshal aeItemStr features err&#x3D;%v&quot;, err))</span><br><span class="line">	continue</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">profileFeaturesStr :&#x3D; &#96;&#123; &#125;&#96;</span><br><span class="line">for featuresKey, featuresValue :&#x3D; range aeFeatures &#123;</span><br><span class="line">	profileFeaturesStr, _ &#x3D; sjson.Set(profileFeaturesStr, featuresKey, featuresValue)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="http请求"><a href="#http请求" class="headerlink" title="http请求"></a>http请求</h1><p><a target="_blank" rel="noopener" href="https://github.com/parnurzeal/gorequest">parnurzeal/gorequest</a></p>
-<h4 id="官方说明-2"><a href="#官方说明-2" class="headerlink" title="官方说明"></a>官方说明</h4><blockquote>
-<p>GoRequest – Simplified HTTP client ( inspired by famous SuperAgent lib in Node.js )</p>
-<blockquote>
-<p>GoRequest makes thing much more simple for you, making http client more awesome and fun like SuperAgent + golang style usage.</p>
-</blockquote>
-</blockquote>
-<h4 id="使用示例-2"><a href="#使用示例-2" class="headerlink" title="使用示例"></a>使用示例</h4><p>Sth in oneline<br><code>resp, body, errs = gorequest.New().Timeout(time.Duration(inter.Timeout) * time.Millisecond).Proxy(&quot;http://proxy:999&quot;).Get(&quot;http://example-no-proxy.com&quot;).End()</code><br>Call Back:<br>Moreover, GoRequest also supports callback function. This gives you much more flexibility on using it. You can use it any way to match your own style! Let’s see a bit of callback example:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func printStatus(resp gorequest.Response, body string, errs []error)&#123;</span><br><span class="line">  fmt.Println(resp.Status)</span><br><span class="line">&#125;</span><br><span class="line">gorequest.New().Get(&quot;http:&#x2F;&#x2F;example.com&quot;).End(printStatus)</span><br></pre></td></tr></table></figure>
-
-<p>For a JSON POST with standard libraries, you might need to marshal map data structure to json format, set headers to ‘application/json’ (and other headers if you need to) and declare http.Client. So, your code becomes longer and harder to maintain:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">m :&#x3D; map[string]interface&#123;&#125;&#123;</span><br><span class="line">  &quot;name&quot;: &quot;backy&quot;,</span><br><span class="line">  &quot;species&quot;: &quot;dog&quot;,</span><br><span class="line">&#125;</span><br><span class="line">mJson, _ :&#x3D; json.Marshal(m)</span><br><span class="line">contentReader :&#x3D; bytes.NewReader(mJson)</span><br><span class="line">req, _ :&#x3D; http.NewRequest(&quot;POST&quot;, &quot;http:&#x2F;&#x2F;example.com&quot;, contentReader)</span><br><span class="line">req.Header.Set(&quot;Content-Type&quot;, &quot;application&#x2F;json&quot;)</span><br><span class="line">req.Header.Set(&quot;Notes&quot;,&quot;GoRequest is coming!&quot;)</span><br><span class="line">client :&#x3D; &amp;http.Client&#123;&#125;</span><br><span class="line">resp, _ :&#x3D; client.Do(req)</span><br></pre></td></tr></table></figure>
-
-<p>摘取了项目（ext-profile）中的使用示例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">request :&#x3D; gorequest.New().Timeout(time.Duration(inter.Timeout) * time.Millisecond)</span><br><span class="line">for key, value :&#x3D; range header &#123;</span><br><span class="line">	request.Header.Set(key, value)</span><br><span class="line">&#125;</span><br><span class="line">for i :&#x3D; inter.Retries; i &gt; 0; i-- &#123;</span><br><span class="line">	resp, result, errs :&#x3D; request.Post(inter.Url).Send(body).End()</span><br><span class="line">	if err :&#x3D; resp.Body.Close(); err!&#x3D; nil &#123;</span><br><span class="line">		ilog.LogReqErr(ilog.LL_ERROR, &quot;async&quot;, feature.RequestId, &quot;resp body close err&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	if errs !&#x3D; nil &#123;</span><br><span class="line">		&#x2F;&#x2F;TODO log</span><br><span class="line">		ilog.LogReqErr(ilog.LL_ERROR, &quot;async&quot;, feature.RequestId, &quot;get third party result fail&quot;, errs)</span><br><span class="line">		continue</span><br><span class="line">	&#125;</span><br><span class="line">	return &amp;resultItem&#123;result: result, identification: inter.UrlName&#125;, nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 

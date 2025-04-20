@@ -425,9 +425,224 @@
   <entry>
     <title>arc42模版的实践思考</title>
     <url>/2025/04/18/arc42%E6%A8%A1%E7%89%88%E7%9A%84%E5%AE%9E%E8%B7%B5%E6%80%9D%E8%80%83/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<p>依赖倒置原则<br>将模块间原来依赖于实现的部分， 修改未依赖接口</p>
+]]></content>
       <categories>
         <category>架构设计</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>怎么理解DDD领域驱动设计</title>
+    <url>/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/</url>
+    <content><![CDATA[<p>2004 年埃里克·埃文斯（Eric Evans）发表了《领域驱动设计》（Domain-Driven Design–Tackling Complexity in the Heart of Software）这本书，从此领域驱动设计（Domain Driven Design，简称 DDD）诞生。</p>
+<blockquote>
+<p><span style="color:red;">DDD 核心思想是通过领域驱动设计方法定义领域模型，从而确定业务和应用边界，保证业务模型与代码模型的一致性。</span></p>
+</blockquote>
+<p><strong>DDD是一种设计思想，通过事件风暴使用通用语言对业务进行领域建模，通过限界上下文进行合理的领域拆分，可以使得领域模型转向微服务的设计和落地，从而解决复杂软件难以理解，难以演进，也可以解决微服务业务界限难以界定的问题。</strong></p>
+<h2 id="什么是领域驱动设计？"><a href="#什么是领域驱动设计？" class="headerlink" title="什么是领域驱动设计？"></a>什么是领域驱动设计？</h2><p>领域 -&gt; 设计<br>什么是领域：<strong>百科：具体指一种特定的范围或区域</strong><br>业务问题域：比如金融领域、医疗领域、电商领域</p>
+<p>什么是驱动：（百科：用动力推动、带动、发动）<br>问题域驱动领域建模、领域模型驱动技术实现</p>
+<p>什么是设计：（百科：设计就是设想、运筹、计划、预算的一个过程）<br>领域模型的设计，用领域模型表达现实世界、解决实际问题。</p>
+<h2 id="有什么优缺点？"><a href="#有什么优缺点？" class="headerlink" title="有什么优缺点？"></a>有什么优缺点？</h2><h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p><span style="color:red;">将数据不⼀致的影响⾯进⼀步放⼤，由微服务级别放⼤到微服务内的聚合级别。</span></p>
+<ul>
+<li>什么是数据不一致：</li>
+<li>为什么会放大：</li>
+</ul>
+<h2 id="怎么使用-DDD"><a href="#怎么使用-DDD" class="headerlink" title="怎么使用 DDD"></a>怎么使用 DDD</h2><ol>
+<li>简历统一语言</li>
+<li>分解问题域</li>
+<li>链接业务和系统</li>
+</ol>
+<h3 id="怎么理解战略设计、战术设计？"><a href="#怎么理解战略设计、战术设计？" class="headerlink" title="怎么理解战略设计、战术设计？"></a>怎么理解战略设计、战术设计？</h3><p>战略设计：通用语言、领域/子域、限界上下文和架构风格等概念</p>
+<table>
+  <tr>
+    <th>动作</th>
+    <th>核心目标</th>
+    <th>关注点</th>
+    <th>关键概念</th>
+    <th>示例</th>
+  </tr>
+  <tr>
+<td>战略设计</td>
+<td>划分系统边界，明确业务领域的核心问题，并定义不同模块的交互关系</td>
+<td>宏观的领域划分、协作关系和语言统一</td>
+<td>
+1. **领域（Domain）**：业务问题空间，如电商、金融等。<br>
+2. **子域（SubDomain）**：将复杂领域分解为更小的部分，分为核心域（核心业务）、支撑域（辅助功能）、通用子域（通用解决方案，如支付）。<br>
+3. **限界上下文（Bounded Context）**：模型的边界，每个上下文内使用一致的术语和规则（例如，“订单”在销售和物流上下文中含义不同）<br>
+4. **上下文映射（Context Mapping）**：定义不同限界上下文之间的交互模式，如合作关系、客户-供应商、防腐层（Anti-Corruption Layer）等。<br>
+5. **统一语言（Ubiquitous Language）**：业务与技术团队共享的术语，确保沟通一致性。<br>
+</td>
+<td>在电商系统重，战略设计会划分出“订单处理”（核心域）、“库存管理”（支撑域 ）、“用户认证”（通用子域）等限界上下文，并通过上下文映射定义他们如何协作（如订单处理通过防腐层调用库存服务）</td>
+</tr>
+<tr>
+<td>战术设计</td>
+<td>实现限界上下文内的领域模型，通过具体模式表达业务逻辑。</td>
+<td>围观的代码结构和设计模式</td>
+<td>
+1. **实体（Entity）**：具有唯一标识和生命周期的对象（如 Order）。<br>
+2. **值对象（Value Object）**：无唯一标识、通过属性定义的对象（如 Money）。<br>
+3. **聚合（Aggregate）**：封装一组相关对象的根实体，保证业务一致性（如 Order 作为聚合根，包含 OrderItem）<br>
+4. **领域服务（Domain Service）**：处理跨聚合或无状态操作的逻辑（如订单计价服务）。<br>
+5. **仓储（Repository）**：提供聚合的持久化和查询接口 <br>
+6. **领域事件（Domain EventId）**：标识业务状态变化的事件（如 OrderPlaceEvent）。<br>
+7. **工厂（Factory）：封装复杂对象的创建逻辑<br>
+</td>
+<td>在“订单处理”上下文中，战术设计会定义 Order 实体、OrderItem 值对象、OrderRepository 仓储，并通过领域事件触发库存更新。</td>
+</tr>
+</table>
+
+
+
+
+]]></content>
+      <categories>
+        <category>架构设计方法论</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>效果实验平台中各类指标的理解</title>
+    <url>/2025/04/20/%E6%95%88%E6%9E%9C%E5%AE%9E%E9%AA%8C%E5%B9%B3%E5%8F%B0%E4%B8%AD%E5%90%84%E7%B1%BB%E6%8C%87%E6%A0%87%E7%9A%84%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<h2 id="先看适用场景"><a href="#先看适用场景" class="headerlink" title="先看适用场景"></a>先看适用场景</h2><h3 id="关键对比与选择建议"><a href="#关键对比与选择建议" class="headerlink" title="关键对比与选择建议"></a>关键对比与选择建议</h3><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>核心关注点</th>
+<th>典型场景</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>准确率</td>
+<td>整体预测正确性</td>
+<td>类别均衡的初步评估</td>
+<td>对不平衡数据不敏感</td>
+</tr>
+<tr>
+<td>精准率</td>
+<td>预测正类的可靠性</td>
+<td>误报成本高（如法律判决）</td>
+<td>可能漏掉大量实际正类</td>
+</tr>
+<tr>
+<td>召回率</td>
+<td>捕捉实际正类的能力</td>
+<td>漏报成本高（如疾病筛查）</td>
+<td>可能引入大量误报</td>
+</tr>
+</tbody></table>
+<p><strong>权衡建议</strong></p>
+<ul>
+<li>精准率 vs 召回率：根据业务需求选择。例如，推荐系统可能优先精准率（推荐内容必须相关），而癌症筛查优先召回率（不能漏诊）。</li>
+<li>综合指标：使用F1分数（精准率和召回率的调和平均）或PR曲线平衡两者。</li>
+</ul>
+<p><strong>进阶技巧</strong></p>
+<ul>
+<li>类别不平衡时，优先选择精准率、召回率或AUC-ROC；</li>
+<li>多分类问题中，可采用宏平均（Macro）或加权平均（Weighted）扩展这些指标。</li>
+</ul>
+<h2 id="再看指标定义"><a href="#再看指标定义" class="headerlink" title="再看指标定义"></a>再看指标定义</h2><p>在介绍指标前必须先了解“混淆矩阵”：</p>
+<h3 id="混淆矩阵"><a href="#混淆矩阵" class="headerlink" title="混淆矩阵"></a>混淆矩阵</h3><ul>
+<li>True Positive(真正，TP)：将正类预测为正类数</li>
+<li>True Negative(真负，TN)：将负类预测为负类数</li>
+<li>False Positive(假正，FP)：将负类预测为正类数误报 (Type I error)</li>
+<li>False Negative(假负，FN)：将正类预测为负类数→漏报 (Type II error)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Positive</th>
+<th>Negative</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>True</td>
+<td>True Positive(TP)</td>
+<td>True Negative(TN)</td>
+</tr>
+<tr>
+<td>False</td>
+<td>False Positive(FP)</td>
+<td>False Negative(FN)</td>
+</tr>
+</tbody></table>
+<table>
+<tr><th rowspan="5">实<br>际<br>类<br>别</th><th colspan="4" style="text-align:center">预测类别</th></tr>
+<tr><td></td><td>Yes</td><td>No</td><td>总计</td></tr>
+<tr><td>Yes</td><td>TP</td><td>FN</td><td>P(实际为 Yes)</td></tr>
+<tr><td>No</td><td>FP</td><td>TN</td><td>N(实际为 No)</td></tr>
+<tr><td>总计</td><td>P'（被分为 Yes）</td><td>N'（被分为 No）</td><td>P+N</td></tr>
+ </table>
+
+<h3 id="准确率（accuracy）"><a href="#准确率（accuracy）" class="headerlink" title="准确率（accuracy）"></a>准确率（accuracy）</h3><p>准确率（accuracy）计算公式为：</p>
+<blockquote>
+<p>ACC = （TP + TN）/ (TP + FP + TN + FN)</p>
+<blockquote>
+<p>简单来说，准确率 = 正确分类的样本数 / 样本总数</p>
+</blockquote>
+</blockquote>
+<h4 id="为什么需要准确率："><a href="#为什么需要准确率：" class="headerlink" title="为什么需要准确率："></a>为什么需要准确率：</h4><p><strong>作用</strong>：衡量模型整体预测正确性，适用于类别均衡的场景。<br><strong>优点</strong>：</p>
+<ul>
+<li>直观易懂：直接反映模型整体正确率；</li>
+<li>计算简单：适合快速评估模型性能。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>对类别不平衡敏感：当某一类样本占绝对多数时（如99%负样本），模型即使将所有样本预测为多数类，准确率也会虚高；</li>
+<li>掩盖细节问题：无法区分模型在正负类上的具体表现差异。</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>类别分布均衡（如男女分类）；</li>
+<li>初步快速评估模型</li>
+</ul>
+<h3 id="精准率-Precision"><a href="#精准率-Precision" class="headerlink" title="精准率(Precision)"></a>精准率(Precision)</h3><blockquote>
+<p>P = TP / (TP + FP)</p>
+<blockquote>
+<p>简单来说，精准率 = 正确分类的正例样本数 / 分类为正例的样本数</p>
+</blockquote>
+</blockquote>
+<h4 id="为什么需要精准率："><a href="#为什么需要精准率：" class="headerlink" title="为什么需要精准率："></a>为什么需要精准率：</h4><p><strong>作用</strong>：衡量模型预测为正类的样本中实际为正类的比例，关注减少误报（False Positive）。<br><strong>优点</strong>：</p>
+<ul>
+<li>强调预测可靠性：适合对误报容忍度低的场景（如垃圾邮件分类）；</li>
+<li>对负样本数量不敏感。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>忽略漏报问题：不关心实际正类中有多少被漏判（FN）；</li>
+<li>可能牺牲召回率以提高精准率。</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>误报成本高的任务（如法律判决、金融风控）；</li>
+<li>需要确保“预测为正类的样本尽可能正确”的场景。</li>
+</ul>
+<h3 id="召回率（recall）"><a href="#召回率（recall）" class="headerlink" title="召回率（recall）"></a>召回率（recall）</h3><blockquote>
+<p>recall=TP/(TP+FN)=TP/P=sensitive</p>
+<blockquote>
+<p>召回率是覆盖面的度量，度量有多个正例被分为正例，recall=TP/(TP+FN)=TP/P=sensitive，可以看到召回率与灵敏度是一样的。</p>
+</blockquote>
+</blockquote>
+<h4 id="为什么需要召回率"><a href="#为什么需要召回率" class="headerlink" title="为什么需要召回率"></a>为什么需要召回率</h4><p><strong>作用</strong>：衡量实际为正类的样本中被正确预测的比例，关注减少漏报（False Negative）。<br><strong>优点</strong>：</p>
+<ul>
+<li>强调覆盖能力：适合必须尽可能捕捉所有正类的场景（如疾病诊断）；</li>
+<li>对正样本数量不敏感。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>可能增加误报：为提高召回率可能将更多样本预测为正类；</li>
+<li>可能牺牲精准率以提高召回率。</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>漏报成本高的任务（如癌症筛查、安全监控）；</li>
+<li>需要“尽可能找出所有正类样本”的场景。</li>
+</ul>
+<p>果然， 这些学术性的、结论性的东西之后看完仍然是一头雾水。想要区分这些指标，还需要深刻理解他们分别是为了解决什么问题的，所谓<strong>知其然，知其所以然</strong></p>
+<h3 id="这三类基础指标，怎么结合其他符合指标一起使用？"><a href="#这三类基础指标，怎么结合其他符合指标一起使用？" class="headerlink" title="这三类基础指标，怎么结合其他符合指标一起使用？"></a>这三类基础指标，怎么结合其他符合指标一起使用？</h3>]]></content>
+      <categories>
+        <category>评测</category>
       </categories>
   </entry>
 </search>

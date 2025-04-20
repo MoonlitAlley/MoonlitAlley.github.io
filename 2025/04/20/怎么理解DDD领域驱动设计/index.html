@@ -22,18 +22,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
 
-  <meta property="og:type" content="article">
-<meta property="og:title" content="重叠实验架构基础设施">
-<meta property="og:url" content="http://example.com/2025/04/17/%E9%87%8D%E5%8F%A0%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/index.html">
+  <meta name="description" content="2004 年埃里克·埃文斯（Eric Evans）发表了《领域驱动设计》（Domain-Driven Design–Tackling Complexity in the Heart of Software）这本书，从此领域驱动设计（Domain Driven Design，简称 DDD）诞生。  DDD 核心思想是通过领域驱动设计方法定义领域模型，从而确定业务和应用边界，保证业务模型与代码模型的一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="怎么理解DDD领域驱动设计">
+<meta property="og:url" content="http://example.com/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/index.html">
 <meta property="og:site_name" content="MoonlitAlley">
+<meta property="og:description" content="2004 年埃里克·埃文斯（Eric Evans）发表了《领域驱动设计》（Domain-Driven Design–Tackling Complexity in the Heart of Software）这本书，从此领域驱动设计（Domain Driven Design，简称 DDD）诞生。  DDD 核心思想是通过领域驱动设计方法定义领域模型，从而确定业务和应用边界，保证业务模型与代码模型的一">
 <meta property="og:locale">
-<meta property="article:published_time" content="2025-04-17T14:29:50.000Z">
-<meta property="article:modified_time" content="2025-04-18T05:29:20.585Z">
+<meta property="article:published_time" content="2025-04-20T04:00:57.000Z">
+<meta property="article:modified_time" content="2025-04-20T05:56:18.468Z">
 <meta property="article:author" content="Saifei Song">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2025/04/17/%E9%87%8D%E5%8F%A0%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/">
+<link rel="canonical" href="http://example.com/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/">
 
 
 <script class="page-configurations">
@@ -46,7 +48,7 @@
   };
 </script>
 
-  <title>重叠实验架构基础设施 | MoonlitAlley</title>
+  <title>怎么理解DDD领域驱动设计 | MoonlitAlley</title>
   
 
 
@@ -200,7 +202,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           Table of Contents
@@ -212,6 +214,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">什么是领域驱动设计？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E4%BB%80%E4%B9%88%E4%BC%98%E7%BC%BA%E7%82%B9%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">有什么优缺点？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">2.0.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">2.0.2.</span> <span class="nav-text">缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E4%BD%BF%E7%94%A8-DDD"><span class="nav-number">3.</span> <span class="nav-text">怎么使用 DDD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3%E6%88%98%E7%95%A5%E8%AE%BE%E8%AE%A1%E3%80%81%E6%88%98%E6%9C%AF%E8%AE%BE%E8%AE%A1%EF%BC%9F"><span class="nav-number">3.1.</span> <span class="nav-text">怎么理解战略设计、战术设计？</span></a></li></ol></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -276,7 +279,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/04/17/%E9%87%8D%E5%8F%A0%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -292,7 +295,7 @@
     
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          重叠实验架构基础设施
+          怎么理解DDD领域驱动设计
         </h1>
 
         <div class="post-meta-container">
@@ -302,23 +305,17 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
+      
 
-      <time title="Created: 2025-04-17 22:29:50" itemprop="dateCreated datePublished" datetime="2025-04-17T22:29:50+08:00">2025-04-17</time>
+      <time title="Created: 2025-04-20 12:00:57 / Modified: 13:56:18" itemprop="dateCreated datePublished" datetime="2025-04-20T12:00:57+08:00">2025-04-20</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2025-04-18 13:29:20" itemprop="dateModified" datetime="2025-04-18T13:29:20+08:00">2025-04-18</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">架构设计</span></a>
+          <a href="/categories/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%B3%95%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">架构设计方法论</span></a>
         </span>
     </span>
 
@@ -331,8 +328,8 @@
       </span>
       <span class="post-meta-item-text">Valine: </span>
     
-    <a title="valine" href="/2025/04/17/%E9%87%8D%E5%8F%A0%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2025/04/17/%E9%87%8D%E5%8F%A0%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/" itemprop="commentCount"></span>
+    <a title="valine" href="/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -346,7 +343,67 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        
+        <p>2004 年埃里克·埃文斯（Eric Evans）发表了《领域驱动设计》（Domain-Driven Design–Tackling Complexity in the Heart of Software）这本书，从此领域驱动设计（Domain Driven Design，简称 DDD）诞生。</p>
+<blockquote>
+<p><span style="color:red;">DDD 核心思想是通过领域驱动设计方法定义领域模型，从而确定业务和应用边界，保证业务模型与代码模型的一致性。</span></p>
+</blockquote>
+<p><strong>DDD是一种设计思想，通过事件风暴使用通用语言对业务进行领域建模，通过限界上下文进行合理的领域拆分，可以使得领域模型转向微服务的设计和落地，从而解决复杂软件难以理解，难以演进，也可以解决微服务业务界限难以界定的问题。</strong></p>
+<h2 id="什么是领域驱动设计？"><a href="#什么是领域驱动设计？" class="headerlink" title="什么是领域驱动设计？"></a>什么是领域驱动设计？</h2><p>领域 -&gt; 设计<br>什么是领域：<strong>百科：具体指一种特定的范围或区域</strong><br>业务问题域：比如金融领域、医疗领域、电商领域</p>
+<p>什么是驱动：（百科：用动力推动、带动、发动）<br>问题域驱动领域建模、领域模型驱动技术实现</p>
+<p>什么是设计：（百科：设计就是设想、运筹、计划、预算的一个过程）<br>领域模型的设计，用领域模型表达现实世界、解决实际问题。</p>
+<h2 id="有什么优缺点？"><a href="#有什么优缺点？" class="headerlink" title="有什么优缺点？"></a>有什么优缺点？</h2><h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p><span style="color:red;">将数据不⼀致的影响⾯进⼀步放⼤，由微服务级别放⼤到微服务内的聚合级别。</span></p>
+<ul>
+<li>什么是数据不一致：</li>
+<li>为什么会放大：</li>
+</ul>
+<h2 id="怎么使用-DDD"><a href="#怎么使用-DDD" class="headerlink" title="怎么使用 DDD"></a>怎么使用 DDD</h2><ol>
+<li>简历统一语言</li>
+<li>分解问题域</li>
+<li>链接业务和系统</li>
+</ol>
+<h3 id="怎么理解战略设计、战术设计？"><a href="#怎么理解战略设计、战术设计？" class="headerlink" title="怎么理解战略设计、战术设计？"></a>怎么理解战略设计、战术设计？</h3><p>战略设计：通用语言、领域/子域、限界上下文和架构风格等概念</p>
+<table>
+  <tr>
+    <th>动作</th>
+    <th>核心目标</th>
+    <th>关注点</th>
+    <th>关键概念</th>
+    <th>示例</th>
+  </tr>
+  <tr>
+<td>战略设计</td>
+<td>划分系统边界，明确业务领域的核心问题，并定义不同模块的交互关系</td>
+<td>宏观的领域划分、协作关系和语言统一</td>
+<td>
+1. **领域（Domain）**：业务问题空间，如电商、金融等。<br>
+2. **子域（SubDomain）**：将复杂领域分解为更小的部分，分为核心域（核心业务）、支撑域（辅助功能）、通用子域（通用解决方案，如支付）。<br>
+3. **限界上下文（Bounded Context）**：模型的边界，每个上下文内使用一致的术语和规则（例如，“订单”在销售和物流上下文中含义不同）<br>
+4. **上下文映射（Context Mapping）**：定义不同限界上下文之间的交互模式，如合作关系、客户-供应商、防腐层（Anti-Corruption Layer）等。<br>
+5. **统一语言（Ubiquitous Language）**：业务与技术团队共享的术语，确保沟通一致性。<br>
+</td>
+<td>在电商系统重，战略设计会划分出“订单处理”（核心域）、“库存管理”（支撑域 ）、“用户认证”（通用子域）等限界上下文，并通过上下文映射定义他们如何协作（如订单处理通过防腐层调用库存服务）</td>
+</tr>
+<tr>
+<td>战术设计</td>
+<td>实现限界上下文内的领域模型，通过具体模式表达业务逻辑。</td>
+<td>围观的代码结构和设计模式</td>
+<td>
+1. **实体（Entity）**：具有唯一标识和生命周期的对象（如 Order）。<br>
+2. **值对象（Value Object）**：无唯一标识、通过属性定义的对象（如 Money）。<br>
+3. **聚合（Aggregate）**：封装一组相关对象的根实体，保证业务一致性（如 Order 作为聚合根，包含 OrderItem）<br>
+4. **领域服务（Domain Service）**：处理跨聚合或无状态操作的逻辑（如订单计价服务）。<br>
+5. **仓储（Repository）**：提供聚合的持久化和查询接口 <br>
+6. **领域事件（Domain EventId）**：标识业务状态变化的事件（如 OrderPlaceEvent）。<br>
+7. **工厂（Factory）：封装复杂对象的创建逻辑<br>
+</td>
+<td>在“订单处理”上下文中，战术设计会定义 Order 实体、OrderItem 值对象、OrderRepository 仓储，并通过领域事件触发库存更新。</td>
+</tr>
+</table>
+
+
+
+
+
     </div>
 
     
@@ -359,13 +416,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2025/04/17/%E6%8E%A8%E8%8D%90%E6%9E%B6%E6%9E%84%E7%9A%84%E5%B7%A5%E7%A8%8B%E6%8B%86%E8%A7%A3/" rel="prev" title="推荐架构的工程拆解">
-                  <i class="fa fa-chevron-left"></i> 推荐架构的工程拆解
+                <a href="/2025/04/18/arc42%E6%A8%A1%E7%89%88%E7%9A%84%E5%AE%9E%E8%B7%B5%E6%80%9D%E8%80%83/" rel="prev" title="arc42模版的实践思考">
+                  <i class="fa fa-chevron-left"></i> arc42模版的实践思考
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2025/04/17/C-%E5%BC%82%E5%B8%B8%E5%88%86%E7%B1%BB%E4%B8%8E%E5%A4%84%E7%90%86/" rel="next" title="C++异常分类与处理">
-                  C++异常分类与处理 <i class="fa fa-chevron-right"></i>
+                <a href="/2025/04/20/%E6%95%88%E6%9E%9C%E5%AE%9E%E9%AA%8C%E5%B9%B3%E5%8F%B0%E4%B8%AD%E5%90%84%E7%B1%BB%E6%8C%87%E6%A0%87%E7%9A%84%E7%90%86%E8%A7%A3/" rel="next" title="效果实验平台中各类指标的理解">
+                  效果实验平台中各类指标的理解 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -468,7 +525,7 @@ NexT.utils.loadComments('#valine-comments', () => {
   NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({
       el  : '#valine-comments',
-      path: "/2025/04/17/%E9%87%8D%E5%8F%A0%E5%AE%9E%E9%AA%8C%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/",
+      path: "/2025/04/20/%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/",
     }, {"enable":true,"appId":"2hxowQ6pisGlXmzRuUTfpTil-gzGzoHsz","appKey":"ToGMLCAskP6uM4bS5pRgJII9","placeholder":"Just go go","avatar":"monsterid","meta":["nick","mail","link"],"pageSize":10,"lang":null,"visitor":false,"comment_count":true,"recordIP":false,"serverURLs":null,"enableQQ":false,"requiredFields":[]}
     ));
   }, window.Valine);
